@@ -1,352 +1,370 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veltrax — Local‑First Platform Overview</title>
-<style>
-  :root{
-    --bg:#0d1117; --surface:#0f1520; --panel:#121a26;
-    --text:#e6ecf3; --muted:#9aa7b6; --border:#223047;
-    --accent:#6f42c1; --accent2:#8aa4ff; --ring:#7aa3ff;
-    --chip:#0c1220; --chipBorder:#2a3754; --lane:#0a111d;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
-  a{color:#8ab4ff;text-decoration:none}
-  a:focus-visible,button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
-
-  header{position:sticky;top:0;z-index:30;background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:12px 14px}
-  .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
-  .title{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
-
-  .container{max-width:1200px;margin:0 auto;padding:14px}
-  .grid-two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
-  .card h2{margin:0 0 10px 0;font-size:19px}
-  .card p{margin:6px 0;color:var(--muted)}
-  .bullets{margin:8px 0 0 18px;color:var(--muted)}
-  .small{color:var(--muted);font-size:13px}
-
-  /* Canvas + details */
-  .canvas{position:relative;border:1px solid var(--border);border-radius:16px;background:var(--surface);min-height:760px;margin-top:12px}
-  svg{width:100%;height:100%}
-  .details-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-  .drawer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .drawer-card h3{margin:0 0 6px 0;font-size:14px}
-  .drawer-card ul{margin:0 0 0 18px;padding:0}
-  .drawer-card li{margin:4px 0;color:var(--muted)}
-
-  /* Diagram visuals */
-  .lane{fill:var(--lane);stroke:var(--border);stroke-width:1;opacity:.6}
-  .node{cursor:pointer;transition:filter .15s ease}
-  .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 14px rgba(111,66,193,.45))}
-  .node rect,.node path{fill:#0d1421;stroke:var(--border)}
-  .node .t-title{fill:var(--text);font-size:18px;font-weight:800}
-  .node .t-sub{fill:var(--muted);font-size:14px}
-  .node .t-item{fill:var(--muted);font-size:14px}
-  .edge{stroke:#7b8497;stroke-width:2.6;fill:none}
-  .edge.air{stroke-dasharray:7 5;stroke:#9aa6bb}
-  .edge.dmz{stroke:var(--accent)}
-  .chip{fill:var(--chip);stroke:var(--chipBorder);stroke-width:1}
-  .chiptext{fill:var(--muted);font-size:12px}
-
-  .controls{position:absolute;left:16px;right:16px;bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
-  .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
-  .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
-  .switch input:checked{background:#4a7dff}
-  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
-  .switch input:checked::after{transform:translateX(18px)}
-  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
-  .btn:hover{border-color:var(--accent)}
-  .chipline{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
-
-  .teaser{margin:14px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
-  .founders strong{font-size:16px}
-  footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
-
-  @media (max-width: 980px){
-    .grid-two{grid-template-columns:1fr}
-    .details-wrap{grid-template-columns:1fr}
-    .node .t-title{font-size:20px}
-    .node .t-sub,.node .t-item{font-size:15px}
-    .canvas{min-height:820px}
-  }
-  @media (max-width: 560px){
-    body{font-size:16px}
-    .controls{flex-direction:column;align-items:flex-start}
-  }
-</style>
-</head>
-<body>
-<header aria-label="Top bar">
-  <span class="logo" aria-hidden="true"></span>
-  <h1 class="title">Veltrax — Local‑First Platform</h1>
-</header>
-
-<div class="container">
-  <!-- Intro (unchanged) -->
-  <section class="grid-two" aria-label="Intro">
-    <div class="card">
-      <h2>What is Veltrax?</h2>
-      <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
-      <ul class="bullets">
-        <li>Works with banking, retail, and legal data.</li>
-        <li>Runs on hardware you control (workstation to DGX).</li>
-        <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
-      </ul>
-      <p class="small">Everything below happens inside your network.</p>
-    </div>
-    <div class="card">
-      <h2>Why local‑first?</h2>
-      <ul class="bullets">
-        <li><strong>Privacy & control:</strong> sensitive data never leaves your building.</li>
-        <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
-        <li><strong>Proof:</strong> everything is audit‑logged so ROI is visible.</li>
-      </ul>
-      <p>Run fully air‑gapped, or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
-    </div>
-  </section>
-
-  <!-- DIAGRAM ONLY CHANGED -->
-  <section aria-label="Architecture">
-    <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
-      <svg id="arch" viewBox="0 0 1200 820">
-        <defs>
-          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-            <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
-          </marker>
-          <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/>
-          </radialGradient>
-        </defs>
-
-        <!-- Swimlanes -->
-        <g aria-hidden="true">
-          <rect class="lane" x="32"  y="40" width="360" height="720" rx="14"/>
-          <rect class="lane" x="432" y="40" width="300" height="720" rx="14"/>
-          <rect class="lane" x="762" y="40" width="406" height="720" rx="14"/>
-        </g>
-
-        <!-- Edges under nodes -->
-        <g id="edges" aria-hidden="true"></g>
-        <g id="edgeChips" aria-hidden="true"></g>
-
-        <!-- Nodes on top -->
-        <g id="nodes"></g>
-      </svg>
-
-      <div class="controls" aria-label="Controls">
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <span class="switch" role="group" aria-label="Update mode">
-            <span aria-hidden="true">Air‑gapped</span>
-            <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
-            <span aria-hidden="true">DMZ relay</span>
-          </span>
-          <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
-        </div>
-        <span class="chipline" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
-      </div>
-    </div>
-
-    <!-- Details (below for spacing) -->
-    <div class="details-wrap" aria-label="Details">
-      <div class="drawer-card">
-        <h3 id="dTitle">Hover or select a node</h3>
-        <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc clears focus.</li></ul>
-      </div>
-      <div class="drawer-card">
-        <h3>Security (simple)</h3>
-        <ul>
-          <li>Signed updates only. Optional quorum signatures.</li>
-          <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
-          <li>AES‑256 at rest. Every action is audit‑logged.</li>
-        </ul>
-      </div>
-      <div class="drawer-card">
-        <h3>Update modes</h3>
-        <ul>
-          <li><strong>Air‑gapped:</strong> carry‑in signed media, then verify & apply.</li>
-          <li><strong>DMZ relay:</strong> scheduled signed pulls, verify in staging, then apply.</li>
-          <li>Both paths keep full audit trails.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Rest unchanged -->
-  <section class="card" aria-label="How data flows">
-    <h2>How your data moves</h2>
-    <ul class="bullets">
-      <li><strong>Cloud sources</strong> (vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
-      <li><strong>Local sources</strong> (Oracle, Postgres, CSV, SFTP) can feed the Core directly using read‑only credentials.</li>
-      <li>Inside the <strong>Veltrax Core</strong> we run your apps, the local database, and a local LLM. Results stream to <strong>ROI & Audit</strong>.</li>
-    </ul>
-  </section>
-
-  <div class="teaser" role="region" aria-label="Next step">
-    <div><strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.</div>
-    <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
+<!-- Veltrax Diagram -->
+<section class="vx-wrap">
+  <div class="vx-bar">
+    <label class="vx-toggle">
+      <input id="modeSwitch" type="checkbox" />
+      <span>Use DMZ relay</span>
+    </label>
+    <button id="ingest" class="vx-btn" type="button">Simulate ingestion</button>
+    <span id="modeLabel" class="vx-mode">Mode: Air‑gapped (manual signed packages)</span>
   </div>
 
-  <div class="founders" role="note" aria-label="Founders Program">
-    <strong>Founders Program:</strong> 30% upfront, milestone deliveries. <strong>First 5 get 15% off + 1 year support.</strong>
-  </div>
+  <svg class="canvas" viewBox="0 0 1400 720" preserveAspectRatio="xMidYMid meet" aria-label="Veltrax data flow">
+    <defs>
+      <linearGradient id="grad" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#6ba4ff" stop-opacity="0.55"/>
+        <stop offset="1" stop-color="#6ba4ff" stop-opacity="0"/>
+      </linearGradient>
+      <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+        <path d="M0,0 L12,6 L0,12 Z" fill="currentColor" />
+      </marker>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="6" />
+      </filter>
+    </defs>
+    <g id="edges"></g>
+    <g id="nodes"></g>
+  </svg>
+</section>
+/* ——— Veltrax diagram styling ——— */
+.vx-wrap { width:100%; max-width:1200px; margin:0 auto; }
+.vx-bar { display:flex; gap:.75rem; align-items:center; justify-content:flex-start; margin:0 0 .75rem 0; flex-wrap:wrap; }
+.vx-toggle input { margin-right:.5rem; }
+.vx-btn { padding:.45rem .8rem; border:1px solid #2C2F36; border-radius:.55rem; background:#1B1D23; color:#E6E7EB; cursor:pointer; }
+.vx-btn:hover { border-color:#4C8DFF; }
+.vx-mode { color:#9AA3B2; font-size:.9rem; }
 
-  <footer><small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small></footer>
-</div>
+.canvas { width:100%; height:auto; display:block; background:transparent; }
 
-  <script>
-  // ——— 1) Architecture model (concise labels sized for no-wrap) ———
-  const model = {
-    profile: "airgapped", // "airgapped" | "dmz"
-    nodes: [
-      { id:"cloud",   x:120, y:120, w:280, h:120,
-        title:"Cloud Sources",
-        bullets:["Vendor APIs • S3 • SaaS exports","Signed bundles • staged in DMZ"] },
-      { id:"local",   x:120, y:280, w:280, h:120,
-        title:"Local Sources",
-        bullets:["Oracle • Postgres • SFTP • CSV","Read‑only creds • checksums"] },
-      { id:"dmz",     x:460, y:210, w:280, h:140,
-        title:"DMZ Update Agent",
-        bullets:["Signed pull & staging","Pull → verify • no secrets at rest"] },
-      { id:"core",    x:800, y:150, w:300, h:170,
-        title:"Veltrax Core",
-        bullets:["Apps: Finex • Échelon • Verdict","Postgres (local) • Local LLM Engine"] },
-      { id:"roi",     x:800, y:360, w:300, h:120,
-        title:"ROI & Audit",
-        bullets:["Live savings & revenue","JSONL → CSV/PDF • Immutable hashes"] }
-    ],
-    edges: [
-      { from:"cloud", to:"dmz", caption:{dmz:"Pulled over mTLS", airgapped:"Carried via signed media"} },
-      { from:"local", to:"core", caption:{dmz:"Direct read‑only sync", airgapped:"Direct read‑only sync"} },
-      { from:"dmz",   to:"core", caption:{dmz:"Verified → apply", airgapped:"Verify in staging → apply"} },
-      { from:"core",  to:"roi",  caption:{dmz:"Local logs → ROI/Audit", airgapped:"Local logs → ROI/Audit"} }
-    ]
-  };
+.edge { stroke:#6b7a90; stroke-width:2.25; fill:none; marker-end:url(#arrow); }
+.edge.glow { stroke:#9db7ff; }
+.cap { font: 13px/1.25 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; fill:#E6E7EB; }
+.cap-bg { fill:#0f1320; opacity:.92; rx:6; ry:6; }
 
-  // ——— 2) SVG helpers ———
-  const svg = document.querySelector('.canvas');
-  const gEdges = document.getElementById('edges');
-  const gNodes = document.getElementById('nodes');
+.vn rect { fill:#121622; stroke:#2C2F36; stroke-width:1.25; rx:14; ry:14; }
+.vn .ring { stroke:url(#grad); stroke-width:2; fill:none; opacity:.35; }
+.vn .title { font: 600 18px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; fill:#E6E7EB; }
+.vn .b { font: 14px/1.45 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; fill:#C8CFDA; }
 
-  function lineBetween(ax, ay, bx, by){
-    // Quadratic curve with gentle bend
-    const midX = (ax + bx)/2;
-    return `M ${ax} ${ay} Q ${midX} ${ay} ${midX} ${(ay+by)/2} T ${bx} ${by}`;
+@media (max-width: 860px) {
+  .vx-mode{display:block; width:100%}
+  .cap { font-size:12px; }
+  .vn .title { font-size:17px; }
+  .vn .b { font-size:13px; }
+}
+<script>
+// ── 0) Config: layout + typographic rhythm ─────────────────────────
+const PAD = 18;            // inner padding
+const GAP_X = 80;          // horizontal gap between columns
+const GAP_Y = 26;          // vertical gap inside node
+const LINE = 20;           // bullet line height
+const MIN_W = 300;         // min card width desktop
+const MIN_H = 110;         // min card height (grows with text)
+const MOBILE_BREAK = 860;  // stack diagram under this width
+
+// ── 1) Data model (unchanged content, clearer wording where needed) ─
+const model = {
+  profile: "airgapped", // "airgapped" | "dmz"
+  nodes: [
+    { id:"cloud", col:0, row:0, w:320,
+      title:"Cloud Sources",
+      bullets:[
+        "Vendor APIs • S3 • SaaS exports",
+        "Signed bundles — staged in DMZ"
+      ]},
+    { id:"local", col:0, row:1, w:320,
+      title:"Local Sources",
+      bullets:[
+        "Oracle • Postgres • SFTP • CSV",
+        "Read‑only credentials • checksums"
+      ]},
+    { id:"dmz", col:1, row:0, w:320,
+      title:"DMZ Update Agent",
+      bullets:[
+        "Signed pull & staging",
+        "Pull → verify • no secrets at rest"
+      ]},
+    { id:"core", col:2, row:0, w:330,
+      title:"Veltrax Core",
+      bullets:[
+        "Apps: Finex • Échelon • Verdict",
+        "Postgres (local) • Local LLM engine"
+      ]},
+    { id:"roi", col:2, row:1, w:330,
+      title:"ROI & Audit",
+      bullets:[
+        "Live savings & revenue",
+        "JSONL → CSV/PDF • Immutable hashes"
+      ]}
+  ],
+  edges: [
+    { from:"cloud", to:"dmz",
+      caption:{dmz:"Pulled over mTLS", airgapped:"Carried via signed media"} },
+    { from:"local", to:"core",
+      caption:{dmz:"Direct read‑only sync", airgapped:"Direct read‑only sync"} },
+    { from:"dmz",   to:"core",
+      caption:{dmz:"Verified → apply", airgapped:"Verify in staging → apply"} },
+    { from:"core",  to:"roi",
+      caption:{dmz:"Local logs → ROI/Audit", airgapped:"Local logs → ROI/Audit"} }
+  ]
+};
+
+// ── 2) DOM refs ─────────────────────────────────────────────────────
+const svg = document.querySelector('.canvas');
+const gEdges = document.getElementById('edges');
+const gNodes = document.getElementById('nodes');
+const modeSwitch = document.getElementById('modeSwitch');
+const modeLabel  = document.getElementById('modeLabel');
+const ingestBtn  = document.getElementById('ingest');
+
+// ── 3) Text wrapping helper (SVG tspans by measured width) ─────────
+function wrapIntoTspans(textEl, text, maxWidth, lineHeight) {
+  // Clear previous
+  while (textEl.firstChild) textEl.removeChild(textEl.firstChild);
+  const words = text.split(/\s+/);
+  let line = [];
+  let tspan = document.createElementNS(svg.namespaceURI, 'tspan');
+  tspan.setAttribute('x', textEl.getAttribute('x'));
+  tspan.setAttribute('dy', 0);
+  textEl.appendChild(tspan);
+
+  for (let i = 0; i < words.length; i++) {
+    line.push(words[i]);
+    tspan.textContent = line.join(' ');
+    if (tspan.getComputedTextLength() > maxWidth) {
+      line.pop();
+      tspan.textContent = line.join(' ');
+      line = [words[i]];
+      tspan = document.createElementNS(svg.namespaceURI, 'tspan');
+      tspan.setAttribute('x', textEl.getAttribute('x'));
+      tspan.setAttribute('dy', lineHeight);
+      tspan.textContent = words[i];
+      textEl.appendChild(tspan);
+    }
   }
+  // Return total height used
+  const spans = [...textEl.querySelectorAll('tspan')];
+  return Math.max(lineHeight, spans.length * lineHeight);
+}
 
-  function draw(){
-    gEdges.innerHTML = ''; gNodes.innerHTML = '';
-    // 2a) Draw edges first (under)
-    model.edges.forEach(e=>{
-      const a = model.nodes.find(n=>n.id===e.from);
-      const b = model.nodes.find(n=>n.id===e.to);
-      const start = { x: a.x + a.w, y: a.y + a.h/2 };
-      const end   = { x: b.x,       y: b.y + b.h/2 };
-      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d', lineBetween(start.x, start.y, end.x, end.y));
-      path.setAttribute('class','edge arrow');
-      gEdges.appendChild(path);
+// ── 4) Layout calculation (grid on desktop, stacked on mobile) ─────
+function computeLayout() {
+  const w = svg.getBoundingClientRect().width || 1200;
+  const isMobile = w < MOBILE_BREAK;
 
-      // Caption centered on curve
-      const label = document.createElementNS('http://www.w3.org/2000/svg','text');
-      label.setAttribute('class','cap');
-      const text = e.caption[model.profile] || '';
-      label.textContent = text;
-      // position at mid
-      const midX = (start.x + end.x)/2, midY = (start.y + end.y)/2;
-      label.setAttribute('x', midX); label.setAttribute('y', midY - 10);
-      label.setAttribute('text-anchor','middle');
-      gEdges.appendChild(label);
-    });
+  // Columns and positions
+  const colCount = isMobile ? 1 : 3;
+  const colWidth = Math.max(MIN_W, Math.min(380, (w - (GAP_X*(colCount-1))) / colCount));
+  const x0 = (w - (colCount*colWidth + (colCount-1)*GAP_X)) / 2;
 
-    // 2b) Draw nodes (over)
-    model.nodes.forEach(n=>{
-      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-      g.setAttribute('class','vn'); g.setAttribute('tabindex','0');
-      g.setAttribute('role','button'); g.setAttribute('aria-label', n.title);
-      // card
-      const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      r.setAttribute('x', n.x); r.setAttribute('y', n.y);
-      r.setAttribute('rx', 12); r.setAttribute('ry', 12);
-      r.setAttribute('width', n.w); r.setAttribute('height', n.h);
-      g.appendChild(r);
-      // title
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', n.x + 16); t.setAttribute('y', n.y + 26);
-      t.setAttribute('class','title'); t.textContent = n.title; g.appendChild(t);
-      // bullets (fixed lines to avoid wrapping/cutoff)
-      n.bullets.forEach((line, i)=>{
-        const b = document.createElementNS('http://www.w3.org/2000/svg','text');
-        b.setAttribute('x', n.x + 16); b.setAttribute('y', n.y + 52 + i*18);
-        b.setAttribute('class','b'); b.textContent = "• " + line; g.appendChild(b);
-      });
-      // subtle ring
-      const glow = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      glow.setAttribute('x', n.x-4); glow.setAttribute('y', n.y-4);
-      glow.setAttribute('width', n.w+8); glow.setAttribute('height', n.h+8);
-      glow.setAttribute('rx', 16); glow.setAttribute('ry', 16);
-      glow.setAttribute('fill','none'); glow.setAttribute('stroke','url(#grad)');
-      glow.setAttribute('opacity','0.25'); g.appendChild(glow);
-
-      // keyboard help: Enter toggles pulse from this node, Esc clears
-      g.addEventListener('keydown', (ev)=>{
-        if(ev.key==='Enter'){ pulseFrom(n.id); }
-        if(ev.key==='Escape'){ stopPulse(); }
-      });
-
-      gNodes.appendChild(g);
-    });
-  }
-
-  // ——— 3) Interactions ———
-  const modeSwitch = document.getElementById('modeSwitch');
-  const modeLabel  = document.getElementById('modeLabel');
-  const ingestBtn  = document.getElementById('ingest');
-
-  modeSwitch.addEventListener('change', ()=>{
-    model.profile = modeSwitch.checked ? 'dmz' : 'airgapped';
-    modeLabel.textContent = modeSwitch.checked
-      ? "Mode: DMZ relay (signed pull over mTLS)"
-      : "Mode: Air‑gapped (manual signed packages)";
-    draw();
+  // Assign x based on column; y based on row (desktop) or flow (mobile)
+  let yFlow = 30;
+  model.nodes.forEach(n => {
+    n.w = colWidth;
+    if (isMobile) {
+      n.x = x0;
+      n.y = yFlow;
+      // height calculated later; we just reserve space now
+      yFlow += 180; // provisional, refined after text measurement
+    } else {
+      n.x = x0 + n.col*(colWidth + GAP_X);
+      n.y = 140 + n.row*220;
+    }
   });
 
-  ingestBtn.addEventListener('click', ()=> pulseFrom('cloud', 'local'));
+  return { isMobile };
+}
 
-  // Pulsing animation along edges
-  let rafId = 0, t0 = 0;
-  function pulseFrom(...startIds){
-    stopPulse();
-    const paths = [...gEdges.querySelectorAll('path.edge')];
-    paths.forEach(p=>p.classList.add('glow'));
-    t0 = performance.now();
-    const tick = (t)=>{
-      const k = (t - t0) / 600;
-      paths.forEach((p,i)=>{
-        p.setAttribute('stroke-dasharray','6 10');
-        p.setAttribute('stroke-dashoffset', String(60 - ((k*60)+(i*8))%60));
+// ── 5) Edge path helper (nice cubic that never overlaps labels) ────
+function curve(ax, ay, bx, by) {
+  const dx = Math.max(60, (bx - ax) * 0.35);
+  const c1x = ax + dx, c1y = ay;
+  const c2x = bx - dx, c2y = by;
+  return `M${ax},${ay} C${c1x},${c1y} ${c2x},${c2y} ${bx},${by}`;
+}
+
+// ── 6) Draw routine ────────────────────────────────────────────────
+function draw() {
+  gEdges.innerHTML = ''; gNodes.innerHTML = '';
+
+  const { isMobile } = computeLayout();
+
+  // First pass: draw nodes to measure dynamic heights
+  const tempGroup = document.createDocumentFragment();
+
+  model.nodes.forEach(n => {
+    const g = document.createElementNS(svg.namespaceURI, 'g');
+    g.setAttribute('class','vn');
+    g.setAttribute('tabindex','0');
+    g.setAttribute('role','button');
+    g.setAttribute('aria-label', n.title);
+
+    // Base rect (height provisional → will be updated after wrapping)
+    const r = document.createElementNS(svg.namespaceURI,'rect');
+    r.setAttribute('x', n.x); r.setAttribute('y', n.y);
+    r.setAttribute('width', n.w); r.setAttribute('height', MIN_H);
+    g.appendChild(r);
+
+    // Title
+    const t = document.createElementNS(svg.namespaceURI,'text');
+    t.setAttribute('x', n.x + PAD);
+    t.setAttribute('y', n.y + PAD + 2);
+    t.setAttribute('class','title');
+    t.textContent = n.title;
+    g.appendChild(t);
+
+    // Bullets (wrapped inside width)
+    let yCursor = n.y + PAD + 8 + 22; // title + spacing
+    const maxTextWidth = n.w - (PAD*2) - 10;
+
+    n.bullets.forEach((line, idx) => {
+      const dot = document.createElementNS(svg.namespaceURI,'text');
+      dot.setAttribute('x', n.x + PAD);
+      dot.setAttribute('y', yCursor);
+      dot.setAttribute('class','b');
+      dot.textContent = '• ';
+      g.appendChild(dot);
+
+      const txt = document.createElementNS(svg.namespaceURI,'text');
+      txt.setAttribute('x', n.x + PAD + 14);
+      txt.setAttribute('y', yCursor);
+      txt.setAttribute('class','b');
+      const used = wrapIntoTspans(txt, line, maxTextWidth, LINE);
+      g.appendChild(txt);
+
+      yCursor += used + (idx === n.bullets.length-1 ? PAD : 6);
+    });
+
+    // Now set the real height
+    const h = Math.max(MIN_H, yCursor - n.y);
+    r.setAttribute('height', h);
+    n.h = h;
+
+    // Glow ring (under)
+    const ring = document.createElementNS(svg.namespaceURI,'rect');
+    ring.setAttribute('x', n.x-6); ring.setAttribute('y', n.y-6);
+    ring.setAttribute('width', n.w+12); ring.setAttribute('height', h+12);
+    ring.setAttribute('rx', 18); ring.setAttribute('ry', 18);
+    ring.setAttribute('class','ring');
+    g.insertBefore(ring, r);
+
+    tempGroup.appendChild(g);
+  });
+
+  gNodes.appendChild(tempGroup);
+
+  // If mobile, recompute vertical flow with actual heights to keep spacing tidy
+  if (computeLayout().isMobile) {
+    let y = 30;
+    model.nodes.forEach(n => {
+      n.y = y;
+      const rect = [...gNodes.querySelectorAll('g.vn')][model.nodes.indexOf(n)].querySelector('rect:nth-of-type(2)');
+      rect.setAttribute('y', n.y);
+      const ring = [...gNodes.querySelectorAll('g.vn')][model.nodes.indexOf(n)].querySelector('rect.ring');
+      ring.setAttribute('y', n.y-6);
+      // shift all text children by delta
+      const delta = n.y - (parseFloat(rect.getAttribute('y')) || n.y);
+      const texts = [...[...gNodes.querySelectorAll('g.vn')][model.nodes.indexOf(n)].querySelectorAll('text')];
+      texts.forEach((tx,i)=>{
+        // Reposition by computing current and adding delta
+        const y0 = parseFloat(tx.getAttribute('y')) || 0;
+        if (y0) tx.setAttribute('y', y0 + (delta||0));
+        // Move tspans
+        tx.querySelectorAll('tspan').forEach((sp,si)=>{
+          if (si===0) sp.setAttribute('dy', 0); // first line explicit
+        });
       });
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-    // auto stop after 3 seconds
-    setTimeout(stopPulse, 3000);
-  }
-  function stopPulse(){
-    cancelAnimationFrame(rafId);
-    gEdges.querySelectorAll('path.edge').forEach(p=>{
-      p.removeAttribute('stroke-dasharray');
-      p.removeAttribute('stroke-dashoffset');
-      p.classList.remove('glow');
+      y += n.h + 22;
     });
   }
 
-  // Initial render
+  // Edges (under nodes, so they render first)
+  model.edges.forEach(e => {
+    const a = model.nodes.find(n => n.id===e.from);
+    const b = model.nodes.find(n => n.id===e.to);
+    const start = { x: a.x + a.w, y: a.y + a.h/2 };
+    const end   = { x: b.x,       y: b.y + b.h/2 };
+
+    const p = document.createElementNS(svg.namespaceURI,'path');
+    p.setAttribute('d', curve(start.x, start.y, end.x, end.y));
+    p.setAttribute('class','edge');
+    gEdges.appendChild(p);
+
+    // Caption with background chip (never cut off)
+    const capGroup = document.createElementNS(svg.namespaceURI,'g');
+    const cap = document.createElementNS(svg.namespaceURI,'text');
+    cap.setAttribute('class','cap');
+    const label = e.caption[model.profile] || '';
+    cap.textContent = label;
+
+    // Put it at curve midpoint
+    const midX = (start.x + end.x)/2;
+    const midY = (start.y + end.y)/2;
+
+    cap.setAttribute('x', midX);
+    cap.setAttribute('y', midY - 8);
+    cap.setAttribute('text-anchor','middle');
+
+    // background rect sized to text bbox after we insert it
+    capGroup.appendChild(cap);
+    gEdges.appendChild(capGroup);
+
+    // After the text is in the DOM, measure and draw bg
+    requestAnimationFrame(()=> {
+      const bb = cap.getBBox();
+      const pad = 6;
+      const bg = document.createElementNS(svg.namespaceURI,'rect');
+      bg.setAttribute('class','cap-bg');
+      bg.setAttribute('x', bb.x - pad);
+      bg.setAttribute('y', bb.y - pad);
+      bg.setAttribute('width', bb.width + pad*2);
+      bg.setAttribute('height', bb.height + pad*2);
+      capGroup.insertBefore(bg, cap);
+    });
+  });
+}
+
+// ── 7) Interactions (mode + pulse) ─────────────────────────────────
+modeSwitch.addEventListener('change', ()=>{
+  model.profile = modeSwitch.checked ? 'dmz' : 'airgapped';
+  modeLabel.textContent = modeSwitch.checked
+    ? "Mode: DMZ relay (signed pull over mTLS)"
+    : "Mode: Air‑gapped (manual signed packages)";
   draw();
-  </script>
-</body>
-</html>
+});
+
+ingestBtn.addEventListener('click', ()=> pulse());
+
+let rafId = 0, t0 = 0;
+function pulse(){
+  stopPulse();
+  const paths = [...gEdges.querySelectorAll('path.edge')];
+  paths.forEach(p=>p.classList.add('glow'));
+  t0 = performance.now();
+  const tick = (t)=>{
+    const k = (t - t0) / 700;
+    paths.forEach((p,i)=>{
+      p.setAttribute('stroke-dasharray','6 12');
+      p.setAttribute('stroke-dashoffset', String(60 - ((k*60)+(i*10))%60));
+    });
+    rafId = requestAnimationFrame(tick);
+  };
+  rafId = requestAnimationFrame(tick);
+  setTimeout(stopPulse, 3000);
+}
+function stopPulse(){
+  cancelAnimationFrame(rafId);
+  gEdges.querySelectorAll('path.edge').forEach(p=>{
+    p.removeAttribute('stroke-dasharray');
+    p.removeAttribute('stroke-dashoffset');
+    p.classList.remove('glow');
+  });
+}
+
+// ── 8) Resize observer: keep it crisp & responsive ─────────────────
+new ResizeObserver(()=> draw()).observe(document.querySelector('.vx-wrap'));
+
+// Initial render
+draw();
+</script>
+
