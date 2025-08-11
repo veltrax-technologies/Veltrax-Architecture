@@ -6,100 +6,107 @@
 <title>Veltrax — Local‑First Platform Overview</title>
 <style>
   /* ─────────────────────────────────────────────────────────
-     Veltrax Dark Tokens (dark only, no external libs)
+     0) Veltrax Dark Tokens (no external libs)
      ───────────────────────────────────────────────────────── */
   :root{
-    --bg:#0d1117; --panel:#131a24; --surface:#0f1520;
-    --text:#e6ecf3; --muted:#9aa7b6; --border:#223049;
-    --accent:#6f42c1; --accent2:#89a6ff; --good:#39d98a; --warn:#ffd166;
-    --ring:#7aa3ff;
+    --bg:#0d1117; --surface:#0f1520; --panel:#121a26;
+    --text:#e6ecf3; --muted:#9aa7b6; --border:#223047;
+    --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
   a{color:#8ab4ff;text-decoration:none}
   a:focus-visible,button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 
-  /* Top header */
+  /* ── 1) Header ─────────────────────────────────────────── */
   header{
-    position:sticky;top:0;z-index:20;
+    position:sticky;top:0;z-index:30;
     background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);
     border-bottom:1px solid var(--border);
-    display:flex;align-items:center;justify-content:space-between;
-    padding:10px 14px;
+    display:flex;align-items:center;justify-content:flex-start;gap:10px;
+    padding:12px 14px;
   }
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
-  .brand h1{margin:0;font-size:14px;font-weight:600;letter-spacing:.3px}
-  .btn,.chip{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer}
-  .btn:hover{border-color:var(--accent)}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  .title{margin:0;font-size:15px;font-weight:600;letter-spacing:.3px}
 
-  /* Intro Sections */
+  /* ── 2) Shell & Cards ──────────────────────────────────── */
   .container{max-width:1200px;margin:0 auto;padding:14px}
-  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
-  .card h2{margin:0 0 8px 0;font-size:16px}
+  .grid-two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+  .card h2{margin:0 0 8px 0;font-size:18px}
   .card p{margin:6px 0;color:var(--muted)}
   .bullets{margin:6px 0 0 18px;color:var(--muted)}
-  .tag{font-size:11px;color:var(--muted)}
+  .small{color:var(--muted);font-size:13px}
 
-  /* Main area */
-  main{display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px}
-  @media (max-width: 980px){ main{grid-template-columns:1fr} aside#drawer{display:none} }
-  .canvas-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:var(--surface);min-height:520px}
+  /* ── 3) Main area (diagram + drawer) ───────────────────── */
+  main{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-top:12px}
+  .canvas{position:relative;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-height:560px}
   svg{width:100%;height:100%}
-
-  /* Drawer */
-  aside#drawer{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .drawer-title{font-weight:600;font-size:13px;margin-bottom:8px}
-  .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:8px}
+  aside#drawer{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
+  .drawer-title{font-weight:700;font-size:14px;margin-bottom:8px}
+  .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
   .drawer-card h3{margin:0 0 6px 0;font-size:13px}
   .drawer-card ul{margin:0 0 0 18px;padding:0}
   .drawer-card li{margin:4px 0;color:var(--muted)}
 
-  /* Controls bar */
-  .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:8px}
-  .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:6px 8px;background:rgba(255,255,255,.02)}
-  .switch input{appearance:none;width:36px;height:20px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
-  .switch input:checked{background:#4a7dff}
-  .switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
-  .switch input:checked::after{transform:translateX(16px)}
-  .cta{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:9px 12px;border-radius:10px;font-weight:600;cursor:pointer}
-  .cta:hover{border-color:var(--accent)}
-  .cta-row{display:flex;gap:8px;flex-wrap:wrap}
-
-  /* SVG styles */
+  /* ── 4) Diagram styles ─────────────────────────────────── */
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
   .node rect,.node path{fill:#0d1421;stroke:var(--border)}
-  .node text{fill:var(--text);font-size:12px}
-  .node .muted{fill:var(--muted);font-size:11px}
-  .edge{stroke:#6b7280;stroke-width:2;fill:none}
-  .edge.air{stroke-dasharray:6 5;stroke:#8b95a6}
+  .node text{fill:var(--text);font-size:13px}
+  .node .muted{fill:var(--muted);font-size:12px}
+  .edge{stroke:#7b8497;stroke-width:2.4;fill:none}
+  .edge.air{stroke-dasharray:7 5;stroke:#9aa6bb}
   .edge.dmz{stroke:var(--accent)}
-  .edgelabel{fill:var(--muted);font-size:11px}
+  .edgelabel{fill:var(--muted);font-size:12px}
 
-  /* Footer + teaser */
-  .teaser{margin:12px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  /* ── 5) Controls (bottom of canvas) ───────────────────── */
+  .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+  .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
+  .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
+  .switch input:checked{background:#4a7dff}
+  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
+  .switch input:checked::after{transform:translateX(18px)}
+  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .chip{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
+
+  /* ── 6) Founders banner & Next teaser ─────────────────── */
+  .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
+  .founders strong{font-size:16px}
+  .teaser{margin:14px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .teaser .btn{font-weight:600}
+
   footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
+
+  /* ── 7) Responsive tweaks ─────────────────────────────── */
+  @media (max-width: 980px){
+    main{grid-template-columns:1fr}
+    aside#drawer{display:none}
+    .card h2{font-size:17px}
+    .node text{font-size:14px}
+    .edgelabel{font-size:13px}
+    .controls{gap:12px}
+  }
+  @media (max-width: 560px){
+    body{font-size:16px}
+    .canvas{min-height:520px}
+    .controls{flex-direction:column;align-items:flex-start}
+  }
 </style>
 </head>
 <body>
-  <!-- Top Bar -->
-  <header role="navigation" aria-label="Top bar">
-    <div class="brand"><span class="logo" aria-hidden="true"></span><h1>Veltrax — Local‑First Platform</h1></div>
-    <div class="row">
-      <a class="btn" href="#what" role="button">What is Veltrax?</a>
-      <a class="btn" href="#why" role="button">Why local‑first?</a>
-      <a class="btn" href="#diagram" role="button">See the flow</a>
-    </div>
+  <!-- Header (clean) -->
+  <header aria-label="Top bar">
+    <span class="logo" aria-hidden="true"></span>
+    <h1 class="title">Veltrax — Local‑First Platform</h1>
   </header>
 
   <div class="container">
-    <!-- HERO: simple summaries for first‑time readers -->
-    <section class="hero" aria-label="Intro">
-      <div class="card" id="what">
+    <!-- Intro for first‑timers -->
+    <section class="grid-two" aria-label="Intro">
+      <div class="card">
         <h2>What is Veltrax?</h2>
         <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
         <ul class="bullets">
@@ -107,24 +114,24 @@
           <li>Runs on hardware you control (workstation to DGX).</li>
           <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
         </ul>
-        <p class="tag">Everything you see below happens inside your network.</p>
+        <p class="small">Everything below happens inside your network.</p>
       </div>
-      <div class="card" id="why">
+      <div class="card">
         <h2>Why local‑first?</h2>
         <ul class="bullets">
           <li><strong>Privacy & control:</strong> sensitive data never leaves your building.</li>
           <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
-          <li><strong>Proof:</strong> every action is logged so ROI and audits are easy.</li>
+          <li><strong>Proof:</strong> everything is audit‑logged so ROI is visible.</li>
         </ul>
-        <p>Updates are signed and verified. You can run fully air‑gapped or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
+        <p>Run fully air‑gapped, or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
       </div>
     </section>
 
-    <!-- Main Diagram + Drawer -->
-    <section id="diagram" aria-label="Architecture">
+    <!-- Diagram + Drawer -->
+    <section aria-label="Architecture">
       <main>
-        <div class="canvas-wrap" id="canvasWrap" role="region" aria-label="Interactive architecture">
-          <svg id="arch" viewBox="0 0 1200 640" role="img" aria-label="Data flow: Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
+        <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
+          <svg id="arch" viewBox="0 0 1200 680" aria-label="Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
             <defs>
               <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
                 <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
@@ -140,20 +147,15 @@
 
           <!-- Controls -->
           <div class="controls" aria-label="Controls">
-            <div class="row">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <span class="switch" role="group" aria-label="Update mode">
                 <span aria-hidden="true">Air‑gapped</span>
                 <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
                 <span aria-hidden="true">DMZ relay</span>
               </span>
-              <button class="cta" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
-              <span class="chip" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
+              <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
             </div>
-            <div class="cta-row" role="group" aria-label="Quick links">
-              <a class="cta" href="#finex" role="button">Open Finex Demo</a>
-              <a class="cta" href="#security" role="button">Security Model</a>
-              <a class="cta" href="#roi" role="button">ROI Explorer</a>
-            </div>
+            <span class="chip" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
           </div>
         </div>
 
@@ -161,252 +163,183 @@
           <div class="drawer-title">Details</div>
           <div class="drawer-card">
             <h3 id="dTitle">Hover or select a node</h3>
-            <ul id="dList">
-              <li>Use Tab to cycle nodes; Enter opens details; Esc closes.</li>
-            </ul>
+            <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc clears focus.</li></ul>
           </div>
-          <div class="drawer-card" id="security">
+          <div class="drawer-card">
             <h3>Security (simple)</h3>
             <ul>
-              <li>Signed updates only. Quorum signatures optional.</li>
+              <li>Signed updates only. Optional quorum signatures.</li>
               <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
               <li>AES‑256 at rest. Every action is audit‑logged.</li>
-            </ul>
-          </div>
-          <div class="drawer-card" id="roi">
-            <h3>ROI (what you see)</h3>
-            <ul>
-              <li>Fraud savings, ops savings, approval‑lift margin.</li>
-              <li>Live dashboard proves value day by day.</li>
-              <li>CSV or PDF exports for leadership and audits.</li>
             </ul>
           </div>
         </aside>
       </main>
     </section>
 
-    <!-- Extra explainer (plain language) -->
+    <!-- Plain-language explainer -->
     <section class="card" aria-label="How data flows">
       <h2>How your data moves</h2>
       <ul class="bullets">
-        <li><strong>Cloud sources</strong> (e.g., vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
+        <li><strong>Cloud sources</strong> (vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
         <li><strong>Local sources</strong> (Oracle, Postgres, CSV, SFTP) can feed the Core directly using read‑only credentials.</li>
         <li>Inside the <strong>Veltrax Core</strong> we run your apps, the local database, and a local LLM. Results stream to <strong>ROI & Audit</strong> so value and compliance are always visible.</li>
       </ul>
     </section>
 
-    <!-- Next page teaser -->
+    <!-- Next + Founders -->
     <div class="teaser" role="region" aria-label="Next step">
       <div><strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.</div>
       <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
     </div>
 
+    <div class="founders" role="note" aria-label="Founders Program">
+      <strong>Founders Program:</strong> 30% upfront, milestone deliveries. <strong>First 5 get 15% off + 1 year support.</strong>
+    </div>
+
     <footer>
-      <small><strong>Founders Program:</strong> 30% upfront, milestone deliveries; first 5 get 15% off + 1 year support.</small>
+      <small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small>
     </footer>
   </div>
 
 <script>
 /* ─────────────────────────────────────────────────────────
-   Model (nodes + edges) — two funnels into Core
+   1) Model — clearer funnel proportions
    ───────────────────────────────────────────────────────── */
 const model = {
-  mode: "air", // "air" | "dmz"
+  mode: "air",
   nodes: [
-    { id:"cloud",  x:60, y:80,  w:260, h:150,
-      title:"Cloud Data Sources",
-      subtitle:"Vendor APIs • S3 • SaaS exports",
-      bullets:{
-        Purpose:["Bring in off‑site data safely"],
-        Protocols:["HTTPS/mTLS • Signed bundles"],
-        Security:["DMZ stages & verifies first"]
-      }
-    },
-    { id:"local",  x:60, y:280, w:260, h:150,
-      title:"Local Data Sources",
-      subtitle:"Oracle • Postgres • SFTP • CSV",
-      bullets:{
-        Purpose:["Read‑only sync from systems"],
-        Protocols:["JDBC/ODBC • SFTP"],
-        Security:["Least‑privilege access"]
-      }
-    },
-    { id:"dmz",    x:380, y:110, w:250, h:120,
-      title:"DMZ Update Agent",
-      subtitle:"Signed pull & staging",
-      bullets:{
-        Purpose:["Pull → stage → verify"],
-        Protocols:["mTLS • COSIGN/Sigstore"],
-        Security:["No secrets at rest"]
-      }
-    },
-    { id:"core",   x:700, y:60,  w:360, h:260,
-      title:"Veltrax Core",
-      subtitle:"Apps • Postgres • Local LLM",
-      bullets:{
-        Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"],
-        Protocols:["gRPC/HTTP APIs • JWT/RBAC"],
-        Security:["AES‑256 at rest • Audit logs"]
-      }
-    },
-    { id:"roi",    x:700, y:360, w:360, h:160,
-      title:"ROI & Audit",
-      subtitle:"Proof of value & compliance",
-      bullets:{
-        Purpose:["Live savings & revenue"],
-        Protocols:["JSONL logs • CSV/PDF"],
-        Security:["Immutable hashes"]
-      }
-    }
+    { id:"cloud", x:60,  y:90,  w:280, h:160,
+      title:"Cloud Sources", subtitle:"Vendor APIs • S3 • SaaS exports",
+      bullets:{ Purpose:["Bring off‑site data safely"], Protocols:["HTTPS/mTLS • Signed bundles"], Security:["DMZ stages & verifies"] } },
+    { id:"local", x:60,  y:300, w:280, h:160,
+      title:"Local Sources", subtitle:"Oracle • Postgres • SFTP • CSV",
+      bullets:{ Purpose:["Read‑only sync from systems"], Protocols:["JDBC/ODBC • SFTP"], Security:["Least‑privilege access"] } },
+    { id:"dmz",   x:380, y:130, w:260, h:120,
+      title:"DMZ Update Agent", subtitle:"Signed pull & staging",
+      bullets:{ Purpose:["Pull → stage → verify"], Protocols:["mTLS • COSIGN/Sigstore"], Security:["No secrets at rest"] } },
+    { id:"core",  x:690, y:60,  w:390, h:280,
+      title:"Veltrax Core", subtitle:"Apps • Postgres • Local LLM",
+      bullets:{ Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"], Protocols:["gRPC/HTTP • JWT/RBAC"], Security:["AES‑256 at rest • Audit logs"] } },
+    { id:"roi",   x:690, y:370, w:390, h:180,
+      title:"ROI & Audit", subtitle:"Proof of value & compliance",
+      bullets:{ Purpose:["Live savings & revenue"], Protocols:["JSONL logs • CSV/PDF"], Security:["Immutable hashes"] } }
   ],
   edges: [
     { id:"e1", from:"cloud", to:"dmz",
-      air:{ label:"Air‑gap active (stage offline)", cls:"air" },
-      dmz:{ label:"Signed pull over mTLS", cls:"dmz" } },
+      air:{label:"Air‑gap active (stage offline)", cls:"air"}, dmz:{label:"Signed pull over mTLS", cls:"dmz"} },
     { id:"e2", from:"dmz", to:"core",
-      air:{ label:"Manual carry‑in after verify", cls:"air" },
-      dmz:{ label:"Verified package → apply", cls:"dmz" } },
+      air:{label:"Manual carry‑in after verify", cls:"air"}, dmz:{label:"Verified package → apply", cls:"dmz"} },
     { id:"e3", from:"local", to:"core",
-      air:{ label:"Direct read‑only sync", cls:"dmz" },
-      dmz:{ label:"Direct read‑only sync", cls:"dmz" } },
+      air:{label:"Direct read‑only sync", cls:"dmz"}, dmz:{label:"Direct read‑only sync", cls:"dmz"} },
     { id:"e4", from:"core", to:"roi",
-      air:{ label:"Local logs → ROI/Audit", cls:"dmz" },
-      dmz:{ label:"Local logs → ROI/Audit", cls:"dmz" } }
+      air:{label:"Local logs → ROI/Audit", cls:"dmz"}, dmz:{label:"Local logs → ROI/Audit", cls:"dmz"} }
   ]
 };
 
-/* DOM helpers */
+/* ─────────────────────────────────────────────────────────
+   2) DOM refs
+   ───────────────────────────────────────────────────────── */
 const $ = (q, el=document)=>el.querySelector(q);
-const arch = $("#arch"), gEdges=$("#edges"), gNodes=$("#nodes"), gLabels=$("#labels");
-const dTitle=$("#dTitle"), dList=$("#dList"), mode=$("#mode"), modeCaption=$("#modeCaption");
+const arch=$("#arch"), gE=$("#edges"), gN=$("#nodes"), gL=$("#labels");
+const mode=$("#mode"), caption=$("#modeCaption");
+const dTitle=$("#dTitle"), dList=$("#dList");
 
-/* Geometry helpers */
-function roundedPath(x,y,w,h,r=14){
-  return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`;
-}
+/* ─────────────────────────────────────────────────────────
+   3) Geometry helpers
+   ───────────────────────────────────────────────────────── */
+function rrect(x,y,w,h,r=16){ return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`; }
 function center(n){ return {x:n.x+n.w/2, y:n.y+n.h/2}; }
-function bezier(from,to){
-  const a=center(from), b=center(to);
-  const dx=b.x-a.x, dy=b.y-a.y;
-  const c1=`${a.x+dx*0.35},${a.y+dy*0.1}`, c2=`${a.x+dx*0.65},${a.y+dy*0.9}`;
-  return `M${a.x},${a.y} C${c1} ${c2} ${b.x},${b.y}`;
+function curve(a,b){
+  const A=center(a), B=center(b), dx=B.x-A.x, dy=B.y-A.y;
+  const c1=`${A.x+dx*0.35},${A.y+dy*0.1}`, c2=`${A.x+dx*0.7},${A.y+dy*0.9}`;
+  return `M${A.x},${A.y} C${c1} ${c2} ${B.x},${B.y}`;
 }
 
-/* Render */
+/* ─────────────────────────────────────────────────────────
+   4) Render diagram
+   ───────────────────────────────────────────────────────── */
 function render(){
-  gEdges.innerHTML=""; gNodes.innerHTML=""; gLabels.innerHTML="";
+  gE.innerHTML=""; gN.innerHTML=""; gL.innerHTML="";
+  // edges first
   for(const e of model.edges){
-    const from=model.nodes.find(n=>n.id===e.from);
-    const to=model.nodes.find(n=>n.id===e.to);
+    const from=model.nodes.find(n=>n.id===e.from), to=model.nodes.find(n=>n.id===e.to);
     const cfg=(model.mode==="dmz")?e.dmz:e.air;
-    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d",bezier(from,to));
-    path.setAttribute("class",`edge ${cfg.cls}`);
-    path.setAttribute("stroke","currentColor");
-    path.setAttribute("marker-end","url(#arrow)");
-    path.dataset.id=e.id;
-    gEdges.appendChild(path);
-
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",curve(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
+    p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id; gE.appendChild(p);
     const t=document.createElementNS("http://www.w3.org/2000/svg","text");
-    const len=path.getTotalLength(), p=path.getPointAtLength(len*0.55);
-    t.setAttribute("x",p.x); t.setAttribute("y",p.y-6);
-    t.setAttribute("text-anchor","middle"); t.setAttribute("class","edgelabel");
-    t.textContent=cfg.label; gLabels.appendChild(t);
+    const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.55);
+    t.setAttribute("x",pt.x); t.setAttribute("y",pt.y-8); t.setAttribute("text-anchor","middle"); t.setAttribute("class","edgelabel");
+    t.textContent=cfg.label; gL.appendChild(t);
   }
+  // nodes
   for(const n of model.nodes){
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");
-    g.setAttribute("class","node"); g.setAttribute("tabindex","0");
-    g.setAttribute("role","button"); g.setAttribute("aria-label",n.title);
-    g.dataset.id=n.id;
-
-    const shape=document.createElementNS("http://www.w3.org/2000/svg","path");
-    shape.setAttribute("d",roundedPath(n.x,n.y,n.w,n.h,16));
-    g.appendChild(shape);
-
-    const t1=document.createElementNS("http://www.w3.org/2000/svg","text");
-    t1.setAttribute("x",n.x+n.w/2); t1.setAttribute("y",n.y+34);
-    t1.setAttribute("text-anchor","middle"); t1.setAttribute("font-weight","600");
-    t1.textContent=n.title; g.appendChild(t1);
-
-    const t2=document.createElementNS("http://www.w3.org/2000/svg","text");
-    t2.setAttribute("x",n.x+n.w/2); t2.setAttribute("y",n.y+56);
-    t2.setAttribute("text-anchor","middle"); t2.setAttribute("class","muted");
-    t2.textContent=n.subtitle; g.appendChild(t2);
-
+    g.setAttribute("class","node"); g.setAttribute("tabindex","0"); g.setAttribute("role","button"); g.setAttribute("aria-label",n.title); g.dataset.id=n.id;
+    const shape=document.createElementNS("http://www.w3.org/2000/svg","path"); shape.setAttribute("d",rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
+    const t1=document.createElementNS("http://www.w3.org/2000/svg","text"); t1.setAttribute("x",n.x+n.w/2); t1.setAttribute("y",n.y+36); t1.setAttribute("text-anchor","middle"); t1.setAttribute("font-weight","700"); t1.textContent=n.title; g.appendChild(t1);
+    const t2=document.createElementNS("http://www.w3.org/2000/svg","text"); t2.setAttribute("x",n.x+n.w/2); t2.setAttribute("y",n.y+60); t2.setAttribute("text-anchor","middle"); t2.setAttribute("class","muted"); t2.textContent=n.subtitle; g.appendChild(t2);
     if(n.id==="core"){
-      const lines=["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"];
-      lines.forEach((line,i)=>{
-        const tx=document.createElementNS("http://www.w3.org/2000/svg","text");
-        tx.setAttribute("x",n.x+16); tx.setAttribute("y",n.y+90+i*20);
-        tx.setAttribute("class","muted"); tx.textContent="• "+line; g.appendChild(tx);
+      ["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"].forEach((line,i)=>{
+        const tx=document.createElementNS("http://www.w3.org/2000/svg","text"); tx.setAttribute("x",n.x+18); tx.setAttribute("y",n.y+94+i*22); tx.setAttribute("class","muted"); tx.textContent="• "+line; g.appendChild(tx);
       });
     }
-    gNodes.appendChild(g);
+    gN.appendChild(g);
   }
 }
 render();
 
-/* Drawer logic */
+/* ─────────────────────────────────────────────────────────
+   5) Drawer behavior
+   ───────────────────────────────────────────────────────── */
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
   dTitle.textContent=n.title; dList.innerHTML="";
-  const flat=[
-    ["Purpose", n.bullets.Purpose?.[0]||""],
-    ["Protocols", n.bullets.Protocols?.[0]||""],
-    ["Security", n.bullets.Security?.[0]||""]
-  ];
-  flat.forEach(([k,v])=>{
-    const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li);
-  });
+  [["Purpose",n.bullets.Purpose?.[0]||""],["Protocols",n.bullets.Protocols?.[0]||""],["Security",n.bullets.Security?.[0]||""]]
+    .forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
 }
-function clearCurrent(){ [...gNodes.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
+function clearCurrent(){ [...gN.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
 
-gNodes.addEventListener("mouseover",e=>{
-  const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id);
-});
-gNodes.addEventListener("mouseout",e=>{
-  const g=e.target.closest(".node"); if(!g) return; g.removeAttribute("aria-current");
-});
-gNodes.addEventListener("click",e=>{
-  const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);
-});
-gNodes.addEventListener("keydown",e=>{
-  const g=e.target.closest(".node"); if(!g) return;
-  if(e.key==="Enter"||e.key===" "){ e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id); }
-});
+gN.addEventListener("mouseover",e=>{ const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id); });
+gN.addEventListener("mouseout",e=>{ const g=e.target.closest(".node"); if(!g) return; g.removeAttribute("aria-current"); });
+gN.addEventListener("click",e=>{ const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id); });
+gN.addEventListener("keydown",e=>{ const g=e.target.closest(".node"); if(!g) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);} });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") clearCurrent(); });
 
-/* Mode toggle */
+/* ─────────────────────────────────────────────────────────
+   6) Mode toggle + caption
+   ───────────────────────────────────────────────────────── */
 mode.addEventListener("change",()=>{
   model.mode = mode.checked ? "dmz" : "air";
-  modeCaption.textContent = model.mode==="air"
+  caption.textContent = model.mode==="air"
     ? "Mode: Air‑gapped (manual signed packages)"
     : "Mode: DMZ relay (signed pull over mTLS)";
   render();
 });
 
-/* Simulation (moving dots along data edges) */
+/* ─────────────────────────────────────────────────────────
+   7) Simulation (moving dots along edges)
+   ───────────────────────────────────────────────────────── */
 $("#simulate").addEventListener("click",()=>{
   const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{
-    const id=p.dataset.id;
-    return id==="e3" || id==="e4" || id==="e1" || (id==="e2" && model.mode==="dmz");
+    const id=p.dataset.id; return id==="e3" || id==="e4" || id==="e1" || (id==="e2" && model.mode==="dmz");
   });
-  paths.forEach(p=>pulse(p, 1100+Math.random()*700));
+  paths.forEach(p=>pulse(p, 1100 + Math.random()*700));
 });
 function pulse(edgePath, ms){
   const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
-  dot.setAttribute("r","4"); dot.setAttribute("fill","url(#pulse)");
+  dot.setAttribute("r","5"); dot.setAttribute("fill","url(#pulse)");
   arch.appendChild(dot);
   const len=edgePath.getTotalLength(), t0=performance.now();
-  function step(t){
+  (function step(t){
     const k=Math.min(1,(t-t0)/ms), pt=edgePath.getPointAtLength(k*len);
     dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y);
     if(k<1) requestAnimationFrame(step); else arch.removeChild(dot);
-  }
-  requestAnimationFrame(step);
+  })(t0);
 }
 
-/* Initial drawer content */
+/* Default details */
 showDetails("cloud");
 </script>
 </body>
