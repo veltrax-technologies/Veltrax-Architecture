@@ -1,605 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Veltrax Platform Architecture — Interactive Overview</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Veltrax — Local‑First Platform Overview</title>
 <style>
   /* ─────────────────────────────────────────────────────────
-     1) Design Tokens (dark theme default)
+     Veltrax Dark Tokens (dark only, no external libs)
      ───────────────────────────────────────────────────────── */
-  :root {
-    --bg: #0f1116;
-    --panel: #151821;
-    --text: #e7e9ee;
-    --muted: #9aa3b2;
-    --ring: #7aa3ff;
-    --accent: #6f42c1;
-    --accent-2: #51d1b6;
-    --border: #232834;
-    --good: #39d98a;
-    --warn: #ffd166;
-    --bad: #ff6b6b;
-    --link: #8ab4ff;
-    --focus: 2px solid #7aa3ff;
-    --shadow: drop-shadow(0 0 12px rgba(111,66,193,.4));
+  :root{
+    --bg:#0d1117; --panel:#131a24; --surface:#0f1520;
+    --text:#e6ecf3; --muted:#9aa7b6; --border:#223049;
+    --accent:#6f42c1; --accent2:#89a6ff; --good:#39d98a; --warn:#ffd166;
+    --ring:#7aa3ff;
   }
-  [data-theme="light"]{
-    --bg: #f6f8fb;
-    --panel: #ffffff;
-    --text: #0d1220;
-    --muted: #4a5568;
-    --ring: #3b82f6;
-    --accent: #6f42c1;
-    --accent-2: #0ea5e9;
-    --border: #e2e8f0;
-    --good: #16a34a;
-    --warn: #b45309;
-    --bad: #dc2626;
-    --link: #2563eb;
-    --focus: 2px solid #3b82f6;
-    --shadow: drop-shadow(0 0 10px rgba(59,130,246,.35));
-  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  a{color:#8ab4ff;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 
-  /* ─────────────────────────────────────────────────────────
-     2) Base Layout
-     ───────────────────────────────────────────────────────── */
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+  /* Top header */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;
   }
-  a { color: var(--link); text-decoration: none; }
-  a:focus-visible, button:focus-visible { outline: var(--focus); outline-offset: 3px; }
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  .brand h1{margin:0;font-size:14px;font-weight:600;letter-spacing:.3px}
+  .btn,.chip{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-  header {
-    position: sticky; top: 0; z-index: 10;
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 10px 14px;
-    background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,0)) , var(--panel);
-    border-bottom: 1px solid var(--border);
-  }
-  .brand { display:flex; align-items:center; gap:10px; }
-  .logo {
-    width: 28px; height: 28px; border-radius:8px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display:inline-block;
-  }
-  .brand h1 { margin:0; font-size:14px; letter-spacing:.2px; font-weight:600; }
-  .top-actions { display:flex; align-items:center; gap:8px; }
-  .btn, .chip {
-    border:1px solid var(--border); background:var(--panel); color:var(--text);
-    padding:7px 10px; border-radius:8px; cursor:pointer;
-  }
-  .btn:hover { border-color: var(--accent); }
-  .chip { font-size:12px; }
+  /* Intro Sections */
+  .container{max-width:1200px;margin:0 auto;padding:14px}
+  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .card h2{margin:0 0 8px 0;font-size:16px}
+  .card p{margin:6px 0;color:var(--muted)}
+  .bullets{margin:6px 0 0 18px;color:var(--muted)}
+  .tag{font-size:11px;color:var(--muted)}
 
-  .popover {
-    position: absolute; right: 10px; top: 48px;
-    background: var(--panel); border:1px solid var(--border);
-    border-radius:10px; padding:8px; display:none; min-width: 200px;
-    box-shadow: 0 10px 40px rgba(0,0,0,.35);
-  }
-  .popover a {
-    display:block; padding:8px; border-radius:8px; color:var(--text);
-  }
-  .popover a:hover { background: rgba(255,255,255,.05); }
+  /* Main area */
+  main{display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px}
+  @media (max-width: 980px){ main{grid-template-columns:1fr} aside#drawer{display:none} }
+  .canvas-wrap{position:relative;border:1px solid var(--border);border-radius:12px;background:var(--surface);min-height:520px}
+  svg{width:100%;height:100%}
 
-  main { display:flex; gap:12px; padding: 12px; height: calc(100dvh - 56px); }
-  .canvas-wrap { position: relative; flex:1 1 auto; min-width: 260px; }
-  svg { width:100%; height:100%; background: transparent; }
+  /* Drawer */
+  aside#drawer{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .drawer-title{font-weight:600;font-size:13px;margin-bottom:8px}
+  .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:8px}
+  .drawer-card h3{margin:0 0 6px 0;font-size:13px}
+  .drawer-card ul{margin:0 0 0 18px;padding:0}
+  .drawer-card li{margin:4px 0;color:var(--muted)}
 
-  aside#drawer {
-    width: 320px; max-width: 40vw; flex: 0 0 auto;
-    background: var(--panel); border:1px solid var(--border); border-radius:12px;
-    padding:12px; display:flex; flex-direction:column; gap:8px;
-  }
-  .drawer-header { display:flex; align-items:center; justify-content:space-between; }
-  .drawer-title { font-size:13px; font-weight:600; }
-  .drawer-card {
-    border:1px solid var(--border); border-radius:10px; padding:10px;
-    background: rgba(255,255,255,.02);
-  }
-  .drawer-card h3 { margin:0 0 6px; font-size:13px; }
-  .drawer-card ul { margin: 0 0 2px 16px; padding:0; }
-  .drawer-card li { margin:3px 0; color: var(--muted); }
+  /* Controls bar */
+  .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:8px}
+  .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:6px 8px;background:rgba(255,255,255,.02)}
+  .switch input{appearance:none;width:36px;height:20px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
+  .switch input:checked{background:#4a7dff}
+  .switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
+  .switch input:checked::after{transform:translateX(16px)}
+  .cta{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:9px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+  .cta:hover{border-color:var(--accent)}
+  .cta-row{display:flex;gap:8px;flex-wrap:wrap}
 
-  .collapse-btn { font-size:12px; }
-  .hidden { display:none !important; }
+  /* SVG styles */
+  .node{cursor:pointer;transition:filter .15s ease}
+  .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
+  .node rect,.node path{fill:#0d1421;stroke:var(--border)}
+  .node text{fill:var(--text);font-size:12px}
+  .node .muted{fill:var(--muted);font-size:11px}
+  .edge{stroke:#6b7280;stroke-width:2;fill:none}
+  .edge.air{stroke-dasharray:6 5;stroke:#8b95a6}
+  .edge.dmz{stroke:var(--accent)}
+  .edgelabel{fill:var(--muted);font-size:11px}
 
-  .controls-bar {
-    position: absolute; left: 12px; right: 12px; bottom: 12px;
-    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
-    background: var(--panel); border:1px solid var(--border); border-radius:12px; padding:8px;
-  }
-  .controls-left, .controls-right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .switch {
-    display:inline-flex; align-items:center; gap:8px; padding:6px 8px;
-    border:1px solid var(--border); border-radius:999px; background: rgba(255,255,255,.02);
-  }
-  .switch input { appearance:none; width:36px; height:20px; border-radius:999px; position:relative; background:#394150; outline:none; cursor:pointer; }
-  .switch input:checked { background:#4a7dff; }
-  .switch input::after {
-    content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition: transform .2s ease;
-  }
-  .switch input:checked::after { transform: translateX(16px); }
-
-  .cta-row { display:flex; gap:8px; flex-wrap: wrap; }
-  .cta { border:1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
-         padding:10px 12px; border-radius:10px; font-weight:600; cursor:pointer; }
-  .cta:hover { border-color: var(--accent); }
-
-  footer { padding: 10px 14px; border-top:1px solid var(--border); color: var(--muted); }
-  .teaser {
-    margin: 10px 14px; border:1px dashed var(--border); border-radius:12px; padding:12px;
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
-  }
-  .teaser-btn { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--panel); cursor:pointer; }
-  .teaser-btn:hover { border-color: var(--accent); }
-
-  /* ─────────────────────────────────────────────────────────
-     3) SVG Styles
-     ───────────────────────────────────────────────────────── */
-  .node { cursor:pointer; filter:none; transition: filter .15s ease, transform .15s ease; }
-  .node rect, .node path { stroke: var(--border); fill: rgba(255,255,255,.02); }
-  .node text { font-size:12px; fill: var(--text); }
-  .node .label-muted { fill: var(--muted); font-size:11px; }
-  .node:hover, .node[aria-current="true"] { filter: var(--shadow); }
-  .node:focus-visible { outline: none; }
-  .glow { filter: var(--shadow); }
-
-  .edge { stroke: #6b7280; stroke-width: 1.8; fill: none; }
-  .edge.dmz { stroke: var(--accent); }
-  .edge.air { stroke-dasharray: 5 4; stroke: var(--muted); }
-  .edge-label { font-size: 11px; fill: var(--muted); }
-  .marker { fill: currentColor; }
-
-  .badge {
-    font-size:10px; fill: var(--muted);
-  }
-
-  /* Responsive: collapse drawer on small screens by default */
-  @media (max-width: 900px){
-    aside#drawer { display:none; }
-  }
+  /* Footer + teaser */
+  .teaser{margin:12px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
 </style>
 </head>
-<body data-theme="dark">
-  <!-- ── Top Bar ─────────────────────────────────────────── -->
+<body>
+  <!-- Top Bar -->
   <header role="navigation" aria-label="Top bar">
-    <div class="brand" aria-label="Veltrax">
-      <span class="logo" aria-hidden="true" title="Veltrax logo"></span>
-      <h1>Veltrax Platform Architecture</h1>
-    </div>
-    <div class="top-actions">
-      <button id="productsBtn" class="chip" aria-haspopup="true" aria-expanded="false" aria-controls="productsPopover">Products ▾</button>
-      <div id="productsPopover" class="popover" role="menu" aria-label="Products">
-        <a href="#finex" role="menuitem">Finex — Banking AI</a>
-        <a href="#echelon" role="menuitem">ÉCHELON — Retail AI</a>
-        <a href="#verdict" role="menuitem">Verdict — Legal AI</a>
-      </div>
-      <button id="themeBtn" class="btn" aria-pressed="true" title="Toggle theme">🌗 Theme</button>
+    <div class="brand"><span class="logo" aria-hidden="true"></span><h1>Veltrax — Local‑First Platform</h1></div>
+    <div class="row">
+      <a class="btn" href="#what" role="button">What is Veltrax?</a>
+      <a class="btn" href="#why" role="button">Why local‑first?</a>
+      <a class="btn" href="#diagram" role="button">See the flow</a>
     </div>
   </header>
 
-  <!-- ── Main Content ────────────────────────────────────── -->
-  <main role="region" aria-label="Architecture canvas">
-    <div class="canvas-wrap" id="canvasWrap">
-      <svg id="arch" viewBox="0 0 1200 680" role="img" aria-label="Veltrax local-first architecture map" tabindex="0">
-        <defs>
-          <marker id="arrow" class="marker" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-            <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
-          </marker>
-        </defs>
-        <!-- Edges (rendered by JS) -->
-        <g id="edges"></g>
-
-        <!-- Nodes (rendered by JS) -->
-        <g id="nodes"></g>
-
-        <!-- Edge labels (rendered by JS) -->
-        <g id="edgeLabels"></g>
-      </svg>
-
-      <!-- Controls bar -->
-      <div class="controls-bar" aria-label="Controls">
-        <div class="controls-left">
-          <span class="switch" role="group" aria-label="Update mode">
-            <span aria-hidden="true">Air‑gapped</span>
-            <input id="modeToggle" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay vs Air‑gapped" />
-            <span aria-hidden="true">DMZ relay</span>
-          </span>
-          <button id="simulateBtn" class="cta" role="button" aria-label="Simulate ingestion">Simulate Ingestion</button>
-          <span id="modeCaption" class="chip" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
-        </div>
-        <div class="controls-right cta-row" role="group" aria-label="Quick actions">
-          <a class="cta" href="#finex-demo" role="button">Open Finex Demo</a>
-          <a class="cta" href="#security-model" role="button">Security Model</a>
-          <a class="cta" href="#roi-explorer" role="button">ROI Explorer</a>
-        </div>
+  <div class="container">
+    <!-- HERO: simple summaries for first‑time readers -->
+    <section class="hero" aria-label="Intro">
+      <div class="card" id="what">
+        <h2>What is Veltrax?</h2>
+        <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
+        <ul class="bullets">
+          <li>Works with banking, retail, and legal data.</li>
+          <li>Runs on hardware you control (workstation to DGX).</li>
+          <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
+        </ul>
+        <p class="tag">Everything you see below happens inside your network.</p>
       </div>
+      <div class="card" id="why">
+        <h2>Why local‑first?</h2>
+        <ul class="bullets">
+          <li><strong>Privacy & control:</strong> sensitive data never leaves your building.</li>
+          <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
+          <li><strong>Proof:</strong> every action is logged so ROI and audits are easy.</li>
+        </ul>
+        <p>Updates are signed and verified. You can run fully air‑gapped or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
+      </div>
+    </section>
+
+    <!-- Main Diagram + Drawer -->
+    <section id="diagram" aria-label="Architecture">
+      <main>
+        <div class="canvas-wrap" id="canvasWrap" role="region" aria-label="Interactive architecture">
+          <svg id="arch" viewBox="0 0 1200 640" role="img" aria-label="Data flow: Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
+              </marker>
+              <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/>
+              </radialGradient>
+            </defs>
+            <g id="edges"></g>
+            <g id="nodes"></g>
+            <g id="labels"></g>
+          </svg>
+
+          <!-- Controls -->
+          <div class="controls" aria-label="Controls">
+            <div class="row">
+              <span class="switch" role="group" aria-label="Update mode">
+                <span aria-hidden="true">Air‑gapped</span>
+                <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
+                <span aria-hidden="true">DMZ relay</span>
+              </span>
+              <button class="cta" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
+              <span class="chip" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
+            </div>
+            <div class="cta-row" role="group" aria-label="Quick links">
+              <a class="cta" href="#finex" role="button">Open Finex Demo</a>
+              <a class="cta" href="#security" role="button">Security Model</a>
+              <a class="cta" href="#roi" role="button">ROI Explorer</a>
+            </div>
+          </div>
+        </div>
+
+        <aside id="drawer" aria-label="Details">
+          <div class="drawer-title">Details</div>
+          <div class="drawer-card">
+            <h3 id="dTitle">Hover or select a node</h3>
+            <ul id="dList">
+              <li>Use Tab to cycle nodes; Enter opens details; Esc closes.</li>
+            </ul>
+          </div>
+          <div class="drawer-card" id="security">
+            <h3>Security (simple)</h3>
+            <ul>
+              <li>Signed updates only. Quorum signatures optional.</li>
+              <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
+              <li>AES‑256 at rest. Every action is audit‑logged.</li>
+            </ul>
+          </div>
+          <div class="drawer-card" id="roi">
+            <h3>ROI (what you see)</h3>
+            <ul>
+              <li>Fraud savings, ops savings, approval‑lift margin.</li>
+              <li>Live dashboard proves value day by day.</li>
+              <li>CSV or PDF exports for leadership and audits.</li>
+            </ul>
+          </div>
+        </aside>
+      </main>
+    </section>
+
+    <!-- Extra explainer (plain language) -->
+    <section class="card" aria-label="How data flows">
+      <h2>How your data moves</h2>
+      <ul class="bullets">
+        <li><strong>Cloud sources</strong> (e.g., vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
+        <li><strong>Local sources</strong> (Oracle, Postgres, CSV, SFTP) can feed the Core directly using read‑only credentials.</li>
+        <li>Inside the <strong>Veltrax Core</strong> we run your apps, the local database, and a local LLM. Results stream to <strong>ROI & Audit</strong> so value and compliance are always visible.</li>
+      </ul>
+    </section>
+
+    <!-- Next page teaser -->
+    <div class="teaser" role="region" aria-label="Next step">
+      <div><strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.</div>
+      <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
     </div>
 
-    <!-- Right Drawer -->
-    <aside id="drawer" aria-label="Details drawer">
-      <div class="drawer-header">
-        <div class="drawer-title" id="drawerTitle">Tooltip</div>
-        <button id="drawerToggle" class="collapse-btn btn" aria-expanded="true" aria-controls="drawerPanel">Collapse</button>
-      </div>
-      <div id="drawerPanel">
-        <div class="drawer-card">
-          <h3 id="cardTitle">—</h3>
-          <ul id="cardList">
-            <!-- bullets injected -->
-          </ul>
-        </div>
-        <div class="drawer-card">
-          <h3>Copy</h3>
-          <ul style="margin-bottom:6px;">
-            <li>Local compute by default, zero SaaS LLM.</li>
-            <li>Reversible deployments; signed updates only.</li>
-            <li>Evidence-first ROI and audit trails.</li>
-          </ul>
-          <small style="color:var(--muted)">Tab through nodes, Enter opens details, Esc closes.</small>
-        </div>
-      </div>
-    </aside>
-  </main>
-
-  <!-- Footer + Next -->
-  <div class="teaser" role="region" aria-label="Next step">
-    <div>
-      <strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.
-    </div>
-    <a class="teaser-btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
+    <footer>
+      <small><strong>Founders Program:</strong> 30% upfront, milestone deliveries; first 5 get 15% off + 1 year support.</small>
+    </footer>
   </div>
-  <footer>
-    <small><strong>Founders Program:</strong> 30% upfront, milestone deliveries, first 5 get 15% off + 1 year support.</small>
-  </footer>
 
 <script>
 /* ─────────────────────────────────────────────────────────
-   1) JSON Model: nodes + edges + profiles
+   Model (nodes + edges) — two funnels into Core
    ───────────────────────────────────────────────────────── */
 const model = {
   mode: "air", // "air" | "dmz"
   nodes: [
-    {
-      id: "sources",
-      x: 120, y: 120, w: 260, h: 160,
-      title: "Data Sources",
-      subtitle: "Oracle • Postgres • SFTP • CSV",
-      bullets: {
-        Purpose: ["Ingest operational & historical data", "Batch or trickle feeds", "Schema verified on load"],
-        Protocols: ["SFTP/FTPS • HTTPS", "JDBC/ODBC", "Checksum + manifest"],
-        Security: ["Read‑only creds", "Least‑privilege pull", "Immutable intake logs"]
+    { id:"cloud",  x:60, y:80,  w:260, h:150,
+      title:"Cloud Data Sources",
+      subtitle:"Vendor APIs • S3 • SaaS exports",
+      bullets:{
+        Purpose:["Bring in off‑site data safely"],
+        Protocols:["HTTPS/mTLS • Signed bundles"],
+        Security:["DMZ stages & verifies first"]
       }
     },
-    {
-      id: "dmz",
-      x: 470, y: 150, w: 240, h: 120,
-      title: "DMZ Update Agent",
-      subtitle: "Relay for signed packages",
-      bullets: {
-        Purpose: ["Broker updates & data sync", "No inbound ports to core", "Stage, verify, release"],
-        Protocols: ["mTLS • TLS 1.3", "Sigstore/COSIGN", "Cron/Pull windows"],
-        Security: ["Signature verify", "Quorum required", "No secrets at rest"]
+    { id:"local",  x:60, y:280, w:260, h:150,
+      title:"Local Data Sources",
+      subtitle:"Oracle • Postgres • SFTP • CSV",
+      bullets:{
+        Purpose:["Read‑only sync from systems"],
+        Protocols:["JDBC/ODBC • SFTP"],
+        Security:["Least‑privilege access"]
       }
     },
-    {
-      id: "core",
-      x: 800, y: 80, w: 300, h: 260,
-      title: "Veltrax Core",
-      subtitle: "Apps • Postgres • Local LLM",
-      bullets: {
-        Purpose: ["Run Finex/ÉCHELON/Verdict", "Score, route, explain", "Stream ROI in real time"],
-        Protocols: ["gRPC/HTTP APIs", "Unix sockets (local)", "JWT + RBAC"],
-        Security: ["On‑prem LLM only", "AES‑256 at rest", "Audit every action"]
+    { id:"dmz",    x:380, y:110, w:250, h:120,
+      title:"DMZ Update Agent",
+      subtitle:"Signed pull & staging",
+      bullets:{
+        Purpose:["Pull → stage → verify"],
+        Protocols:["mTLS • COSIGN/Sigstore"],
+        Security:["No secrets at rest"]
       }
     },
-    {
-      id: "roi",
-      x: 800, y: 380, w: 300, h: 160,
-      title: "ROI & Audit",
-      subtitle: "Proof of value & compliance",
-      bullets: {
-        Purpose: ["Live savings & revenue", "Change history", "Evidence bundles"],
-        Protocols: ["JSON lines logs", "WORM store export", "CSV/PDF packs"],
-        Security: ["Immutable hashes", "Time‑stamped events", "Tamper alerts"]
+    { id:"core",   x:700, y:60,  w:360, h:260,
+      title:"Veltrax Core",
+      subtitle:"Apps • Postgres • Local LLM",
+      bullets:{
+        Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"],
+        Protocols:["gRPC/HTTP APIs • JWT/RBAC"],
+        Security:["AES‑256 at rest • Audit logs"]
+      }
+    },
+    { id:"roi",    x:700, y:360, w:360, h:160,
+      title:"ROI & Audit",
+      subtitle:"Proof of value & compliance",
+      bullets:{
+        Purpose:["Live savings & revenue"],
+        Protocols:["JSONL logs • CSV/PDF"],
+        Security:["Immutable hashes"]
       }
     }
   ],
   edges: [
-    { id: "e1", from: "sources", to: "core",
-      air: { label: "Manual signed import (offline)", cls: "air" },
-      dmz: { label: "Staged pull → verify → apply (mTLS)", cls: "dmz" } },
-    { id: "e2", from: "dmz", to: "core",
-      air: { label: "Idle (air‑gap active)", cls: "air" },
-      dmz: { label: "Signed package relay (COSIGN)", cls: "dmz" } },
-    { id: "e3", from: "core", to: "roi",
-      air: { label: "Local logs → ROI/Audit", cls: "dmz" },
-      dmz: { label: "Local logs → ROI/Audit", cls: "dmz" } }
+    { id:"e1", from:"cloud", to:"dmz",
+      air:{ label:"Air‑gap active (stage offline)", cls:"air" },
+      dmz:{ label:"Signed pull over mTLS", cls:"dmz" } },
+    { id:"e2", from:"dmz", to:"core",
+      air:{ label:"Manual carry‑in after verify", cls:"air" },
+      dmz:{ label:"Verified package → apply", cls:"dmz" } },
+    { id:"e3", from:"local", to:"core",
+      air:{ label:"Direct read‑only sync", cls:"dmz" },
+      dmz:{ label:"Direct read‑only sync", cls:"dmz" } },
+    { id:"e4", from:"core", to:"roi",
+      air:{ label:"Local logs → ROI/Audit", cls:"dmz" },
+      dmz:{ label:"Local logs → ROI/Audit", cls:"dmz" } }
   ]
 };
 
-/* ─────────────────────────────────────────────────────────
-   2) DOM Helpers
-   ───────────────────────────────────────────────────────── */
-const $ = (q, el=document) => el.querySelector(q);
-const $$ = (q, el=document) => [...el.querySelectorAll(q)];
-const arch = $("#arch");
-const gNodes = $("#nodes");
-const gEdges = $("#edges");
-const gEdgeLabels = $("#edgeLabels");
-const drawer = $("#drawer");
-const drawerTitle = $("#drawerTitle");
-const cardTitle = $("#cardTitle");
-const cardList = $("#cardList");
-const drawerPanel = $("#drawerPanel");
+/* DOM helpers */
+const $ = (q, el=document)=>el.querySelector(q);
+const arch = $("#arch"), gEdges=$("#edges"), gNodes=$("#nodes"), gLabels=$("#labels");
+const dTitle=$("#dTitle"), dList=$("#dList"), mode=$("#mode"), modeCaption=$("#modeCaption");
 
-/* ─────────────────────────────────────────────────────────
-   3) Render: Nodes & Edges
-   ───────────────────────────────────────────────────────── */
-function rectPath(x,y,w,h,r=14){
-  // rounded rect path (for crisp SVG text selection)
+/* Geometry helpers */
+function roundedPath(x,y,w,h,r=14){
   return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`;
 }
-function centerOf(node){
-  return { cx: node.x + node.w/2, cy: node.y + node.h/2 };
+function center(n){ return {x:n.x+n.w/2, y:n.y+n.h/2}; }
+function bezier(from,to){
+  const a=center(from), b=center(to);
+  const dx=b.x-a.x, dy=b.y-a.y;
+  const c1=`${a.x+dx*0.35},${a.y+dy*0.1}`, c2=`${a.x+dx*0.65},${a.y+dy*0.9}`;
+  return `M${a.x},${a.y} C${c1} ${c2} ${b.x},${b.y}`;
 }
-function edgeLine(fromNode, toNode){
-  const a = centerOf(fromNode), b = centerOf(toNode);
-  // a slight curve
-  const dx = (b.cx - a.cx), dy = (b.cy - a.cy);
-  const c1x = a.cx + dx*0.4, c1y = a.cy + dy*0.1;
-  const c2x = a.cx + dx*0.6, c2y = a.cy + dy*0.9;
-  return `M${a.cx},${a.cy} C${c1x},${c1y} ${c2x},${c2y} ${b.cx},${b.cy}`;
-}
+
+/* Render */
 function render(){
-  // clear
-  gNodes.innerHTML = ""; gEdges.innerHTML = ""; gEdgeLabels.innerHTML = "";
-
-  // edges first so nodes sit above
+  gEdges.innerHTML=""; gNodes.innerHTML=""; gLabels.innerHTML="";
   for(const e of model.edges){
-    const from = model.nodes.find(n=>n.id===e.from);
-    const to = model.nodes.find(n=>n.id===e.to);
-    const d = edgeLine(from, to);
-
-    const modeCfg = model.mode === "dmz" ? e.dmz : e.air;
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d", d);
-    path.setAttribute("class", `edge ${modeCfg.cls}`);
-    path.setAttribute("stroke", "currentColor");
-    path.setAttribute("marker-end", "url(#arrow)");
-    path.setAttribute("data-edge-id", e.id);
+    const from=model.nodes.find(n=>n.id===e.from);
+    const to=model.nodes.find(n=>n.id===e.to);
+    const cfg=(model.mode==="dmz")?e.dmz:e.air;
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d",bezier(from,to));
+    path.setAttribute("class",`edge ${cfg.cls}`);
+    path.setAttribute("stroke","currentColor");
+    path.setAttribute("marker-end","url(#arrow)");
+    path.dataset.id=e.id;
     gEdges.appendChild(path);
 
-    // label positioned at 60% length
-    const lbl = document.createElementNS("http://www.w3.org/2000/svg","text");
-    const len = path.getTotalLength();
-    const p = path.getPointAtLength(len*0.6);
-    lbl.setAttribute("x", p.x);
-    lbl.setAttribute("y", p.y - 6);
-    lbl.setAttribute("text-anchor", "middle");
-    lbl.setAttribute("class", "edge-label");
-    lbl.textContent = modeCfg.label;
-    gEdgeLabels.appendChild(lbl);
+    const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    const len=path.getTotalLength(), p=path.getPointAtLength(len*0.55);
+    t.setAttribute("x",p.x); t.setAttribute("y",p.y-6);
+    t.setAttribute("text-anchor","middle"); t.setAttribute("class","edgelabel");
+    t.textContent=cfg.label; gLabels.appendChild(t);
   }
-
-  // nodes
   for(const n of model.nodes){
-    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
-    g.setAttribute("class", "node");
-    g.setAttribute("tabindex", "0");
-    g.setAttribute("role","button");
-    g.setAttribute("aria-label", n.title);
-    g.setAttribute("data-node-id", n.id);
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","node"); g.setAttribute("tabindex","0");
+    g.setAttribute("role","button"); g.setAttribute("aria-label",n.title);
+    g.dataset.id=n.id;
 
-    const shape = document.createElementNS("http://www.w3.org/2000/svg","path");
-    shape.setAttribute("d", rectPath(n.x, n.y, n.w, n.h, 16));
-    shape.setAttribute("fill", "currentColor");
+    const shape=document.createElementNS("http://www.w3.org/2000/svg","path");
+    shape.setAttribute("d",roundedPath(n.x,n.y,n.w,n.h,16));
     g.appendChild(shape);
 
-    const t1 = document.createElementNS("http://www.w3.org/2000/svg","text");
-    t1.setAttribute("x", n.x + n.w/2);
-    t1.setAttribute("y", n.y + 34);
-    t1.setAttribute("text-anchor","middle");
-    t1.setAttribute("font-weight","600");
-    t1.textContent = n.title;
-    g.appendChild(t1);
+    const t1=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t1.setAttribute("x",n.x+n.w/2); t1.setAttribute("y",n.y+34);
+    t1.setAttribute("text-anchor","middle"); t1.setAttribute("font-weight","600");
+    t1.textContent=n.title; g.appendChild(t1);
 
-    const t2 = document.createElementNS("http://www.w3.org/2000/svg","text");
-    t2.setAttribute("x", n.x + n.w/2);
-    t2.setAttribute("y", n.y + 56);
-    t2.setAttribute("text-anchor","middle");
-    t2.setAttribute("class","label-muted");
-    t2.textContent = n.subtitle;
-    g.appendChild(t2);
+    const t2=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t2.setAttribute("x",n.x+n.w/2); t2.setAttribute("y",n.y+56);
+    t2.setAttribute("text-anchor","middle"); t2.setAttribute("class","muted");
+    t2.textContent=n.subtitle; g.appendChild(t2);
 
-    // subtle badges inside core
-    if(n.id === "core"){
-      const coreLines = ["Apps: Finex • É • Ver", "Postgres (local)", "Local LLM Engine"];
-      coreLines.forEach((line,i)=>{
-        const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
-        tx.setAttribute("x", n.x + 16);
-        tx.setAttribute("y", n.y + 90 + i*20);
-        tx.setAttribute("class","badge");
-        tx.textContent = "• " + line;
-        g.appendChild(tx);
+    if(n.id==="core"){
+      const lines=["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"];
+      lines.forEach((line,i)=>{
+        const tx=document.createElementNS("http://www.w3.org/2000/svg","text");
+        tx.setAttribute("x",n.x+16); tx.setAttribute("y",n.y+90+i*20);
+        tx.setAttribute("class","muted"); tx.textContent="• "+line; g.appendChild(tx);
       });
     }
-
     gNodes.appendChild(g);
   }
 }
 render();
 
-/* ─────────────────────────────────────────────────────────
-   4) Drawer & Node Interactions (hover → glow; click/Enter → details)
-   ───────────────────────────────────────────────────────── */
-function setDrawer(nodeId){
-  const n = model.nodes.find(nn=>nn.id===nodeId);
-  if(!n) return;
-  drawerTitle.textContent = "Details";
-  cardTitle.textContent = n.title;
-  cardList.innerHTML = "";
-  const items = [
-    ["Purpose", n.bullets.Purpose],
-    ["Protocols", n.bullets.Protocols],
-    ["Security", n.bullets.Security]
+/* Drawer logic */
+function showDetails(id){
+  const n=model.nodes.find(x=>x.id===id); if(!n) return;
+  dTitle.textContent=n.title; dList.innerHTML="";
+  const flat=[
+    ["Purpose", n.bullets.Purpose?.[0]||""],
+    ["Protocols", n.bullets.Protocols?.[0]||""],
+    ["Security", n.bullets.Security?.[0]||""]
   ];
-  for(const [head, lines] of items){
-    const liHead = document.createElement("li");
-    liHead.innerHTML = `<strong>${head}:</strong> ${lines[0]}`;
-    cardList.appendChild(liHead);
-    // keep max 3 total bullets visible across categories = 3 lines
-    // We'll add only the first item per category to stay within "max 3 bullet lines" globally.
-  }
+  flat.forEach(([k,v])=>{
+    const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li);
+  });
 }
-function clearCurrent(){
-  $$(".node").forEach(el=>el.removeAttribute("aria-current"));
-}
-gNodes.addEventListener("mouseover", (e)=>{
-  const g = e.target.closest(".node");
-  if(!g) return;
-  g.classList.add("glow");
-});
-gNodes.addEventListener("mouseout", (e)=>{
-  const g = e.target.closest(".node");
-  if(!g) return;
-  g.classList.remove("glow");
-});
-gNodes.addEventListener("click", (e)=>{
-  const g = e.target.closest(".node");
-  if(!g) return;
-  clearCurrent();
-  g.setAttribute("aria-current","true");
-  setDrawer(g.getAttribute("data-node-id"));
-});
-gNodes.addEventListener("keydown", (e)=>{
-  const g = e.target.closest(".node");
-  if(!g) return;
-  if(e.key === "Enter" || e.key === " "){
-    e.preventDefault();
-    clearCurrent();
-    g.setAttribute("aria-current","true");
-    setDrawer(g.getAttribute("data-node-id"));
-  }
-});
-document.addEventListener("keydown", (e)=>{
-  if(e.key === "Escape"){
-    // close drawer panel
-    drawerPanel.classList.add("hidden");
-    $("#drawerToggle").setAttribute("aria-expanded","false");
-  }
-});
+function clearCurrent(){ [...gNodes.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
 
-/* ─────────────────────────────────────────────────────────
-   5) Mode Toggle (Air‑gapped ↔ DMZ relay)
-   ───────────────────────────────────────────────────────── */
-const modeToggle = $("#modeToggle");
-const modeCaption = $("#modeCaption");
-modeToggle.addEventListener("change", ()=>{
-  model.mode = modeToggle.checked ? "dmz" : "air";
-  modeCaption.textContent = model.mode === "air"
+gNodes.addEventListener("mouseover",e=>{
+  const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id);
+});
+gNodes.addEventListener("mouseout",e=>{
+  const g=e.target.closest(".node"); if(!g) return; g.removeAttribute("aria-current");
+});
+gNodes.addEventListener("click",e=>{
+  const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);
+});
+gNodes.addEventListener("keydown",e=>{
+  const g=e.target.closest(".node"); if(!g) return;
+  if(e.key==="Enter"||e.key===" "){ e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id); }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") clearCurrent(); });
+
+/* Mode toggle */
+mode.addEventListener("change",()=>{
+  model.mode = mode.checked ? "dmz" : "air";
+  modeCaption.textContent = model.mode==="air"
     ? "Mode: Air‑gapped (manual signed packages)"
     : "Mode: DMZ relay (signed pull over mTLS)";
   render();
 });
 
-/* ─────────────────────────────────────────────────────────
-   6) Simulation: animated pulses from Sources → Core
-   ───────────────────────────────────────────────────────── */
-const simulateBtn = $("#simulateBtn");
-function animatePulse(edgePath, duration=1400){
-  // create a small moving dot along path
-  const dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
-  dot.setAttribute("r","4");
-  dot.setAttribute("fill", model.mode === "dmz" ? "url(#gradPulse)" : "#bbb");
-  dot.setAttribute("stroke", "none");
+/* Simulation (moving dots along data edges) */
+$("#simulate").addEventListener("click",()=>{
+  const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{
+    const id=p.dataset.id;
+    return id==="e3" || id==="e4" || id==="e1" || (id==="e2" && model.mode==="dmz");
+  });
+  paths.forEach(p=>pulse(p, 1100+Math.random()*700));
+});
+function pulse(edgePath, ms){
+  const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
+  dot.setAttribute("r","4"); dot.setAttribute("fill","url(#pulse)");
   arch.appendChild(dot);
-
-  const len = edgePath.getTotalLength();
-  const t0 = performance.now();
+  const len=edgePath.getTotalLength(), t0=performance.now();
   function step(t){
-    const p = Math.min(1, (t - t0)/duration);
-    const pt = edgePath.getPointAtLength(p*len);
-    dot.setAttribute("cx", pt.x);
-    dot.setAttribute("cy", pt.y);
-    if(p < 1) requestAnimationFrame(step);
-    else arch.removeChild(dot);
+    const k=Math.min(1,(t-t0)/ms), pt=edgePath.getPointAtLength(k*len);
+    dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y);
+    if(k<1) requestAnimationFrame(step); else arch.removeChild(dot);
   }
   requestAnimationFrame(step);
 }
-function runSimulation(){
-  const paths = $$("#edges path");
-  // highlight data edges only (sources + dmz→core when DMZ)
-  for(const p of paths){
-    const id = p.getAttribute("data-edge-id");
-    if(id === "e1" || (id === "e2" && model.mode==="dmz")){
-      animatePulse(p, 1200 + Math.random()*600);
-    }
-  }
-}
-simulateBtn.addEventListener("click", runSimulation);
 
-// gradient for DMZ pulses (define once)
-(function addGrad(){
-  const defs = arch.querySelector("defs");
-  const g = document.createElementNS("http://www.w3.org/2000/svg","radialGradient");
-  g.setAttribute("id","gradPulse");
-  const s1 = document.createElementNS("http://www.w3.org/2000/svg","stop");
-  s1.setAttribute("offset","0%");
-  s1.setAttribute("stop-color", "#9aa8ff");
-  const s2 = document.createElementNS("http://www.w3.org/2000/svg","stop");
-  s2.setAttribute("offset","100%");
-  s2.setAttribute("stop-color", "#6f42c1");
-  g.appendChild(s1); g.appendChild(s2);
-  defs.appendChild(g);
-})();
-
-/* ─────────────────────────────────────────────────────────
-   7) Drawer toggle
-   ───────────────────────────────────────────────────────── */
-$("#drawerToggle").addEventListener("click", ()=>{
-  const isHidden = drawerPanel.classList.toggle("hidden");
-  $("#drawerToggle").setAttribute("aria-expanded", String(!isHidden));
-});
-
-/* ─────────────────────────────────────────────────────────
-   8) Theme toggle
-   ───────────────────────────────────────────────────────── */
-$("#themeBtn").addEventListener("click", ()=>{
-  const root = document.body;
-  const next = root.getAttribute("data-theme")==="dark" ? "light" : "dark";
-  root.setAttribute("data-theme", next);
-});
-
-/* ─────────────────────────────────────────────────────────
-   9) Products popover
-   ───────────────────────────────────────────────────────── */
-const productsBtn = $("#productsBtn");
-const productsPopover = $("#productsPopover");
-productsBtn.addEventListener("click", ()=>{
-  const open = productsPopover.style.display === "block";
-  productsPopover.style.display = open ? "none" : "block";
-  productsBtn.setAttribute("aria-expanded", String(!open));
-});
-document.addEventListener("click", (e)=>{
-  if(e.target === productsBtn) return;
-  if(!productsPopover.contains(e.target)) {
-    productsPopover.style.display = "none";
-    productsBtn.setAttribute("aria-expanded","false");
-  }
-});
-
-/* ─────────────────────────────────────────────────────────
-   10) Initial focus + default drawer content
-   ───────────────────────────────────────────────────────── */
-setDrawer("sources");
+/* Initial drawer content */
+showDetails("cloud");
 </script>
 </body>
 </html>
