@@ -29,18 +29,16 @@
   .bullets{margin:8px 0 0 18px;color:var(--muted)}
   .small{color:var(--muted);font-size:13px}
 
-  /* Main area: full-width canvas, details below for more room */
-  .canvas{position:relative;border:1px solid var(--border);border-radius:16px;background:var(--surface);min-height:660px;margin-top:12px}
+  /* Canvas + details */
+  .canvas{position:relative;border:1px solid var(--border);border-radius:16px;background:var(--surface);min-height:760px;margin-top:12px}
   svg{width:100%;height:100%}
-
-  /* Details block (moved below) */
   .details-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
   .drawer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
   .drawer-card h3{margin:0 0 6px 0;font-size:14px}
   .drawer-card ul{margin:0 0 0 18px;padding:0}
   .drawer-card li{margin:4px 0;color:var(--muted)}
 
-  /* Diagram aesthetics */
+  /* Diagram visuals */
   .lane{fill:var(--lane);stroke:var(--border);stroke-width:1;opacity:.6}
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 14px rgba(111,66,193,.45))}
@@ -54,7 +52,7 @@
   .chip{fill:var(--chip);stroke:var(--chipBorder);stroke-width:1}
   .chiptext{fill:var(--muted);font-size:12px}
 
-  .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+  .controls{position:absolute;left:16px;right:16px;bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
   .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
   .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
   .switch input:checked{background:#4a7dff}
@@ -74,7 +72,7 @@
     .details-wrap{grid-template-columns:1fr}
     .node .t-title{font-size:20px}
     .node .t-sub,.node .t-item{font-size:15px}
-    .canvas{min-height:640px}
+    .canvas{min-height:820px}
   }
   @media (max-width: 560px){
     body{font-size:16px}
@@ -89,7 +87,7 @@
 </header>
 
 <div class="container">
-  <!-- Intro keeps as-is -->
+  <!-- Intro (unchanged) -->
   <section class="grid-two" aria-label="Intro">
     <div class="card">
       <h2>What is Veltrax?</h2>
@@ -112,10 +110,10 @@
     </div>
   </section>
 
-  <!-- Rebuilt DIAGRAM -->
+  <!-- DIAGRAM ONLY CHANGED -->
   <section aria-label="Architecture">
     <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
-      <svg id="arch" viewBox="0 0 1200 720" aria-label="Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
+      <svg id="arch" viewBox="0 0 1200 820">
         <defs>
           <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
             <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
@@ -125,21 +123,21 @@
           </radialGradient>
         </defs>
 
-        <!-- Swimlanes for structure -->
+        <!-- Swimlanes -->
         <g aria-hidden="true">
-          <rect class="lane" x="32" y="40" width="340" height="640" rx="14"/>
-          <rect class="lane" x="402" y="40" width="300" height="640" rx="14"/>
-          <rect class="lane" x="732" y="40" width="436" height="640" rx="14"/>
+          <rect class="lane" x="32"  y="40" width="360" height="720" rx="14"/>
+          <rect class="lane" x="432" y="40" width="300" height="720" rx="14"/>
+          <rect class="lane" x="762" y="40" width="406" height="720" rx="14"/>
         </g>
 
-        <!-- Edges under everything -->
+        <!-- Edges under nodes -->
         <g id="edges" aria-hidden="true"></g>
         <g id="edgeChips" aria-hidden="true"></g>
+
         <!-- Nodes on top -->
         <g id="nodes"></g>
       </svg>
 
-      <!-- Controls -->
       <div class="controls" aria-label="Controls">
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <span class="switch" role="group" aria-label="Update mode">
@@ -153,7 +151,7 @@
       </div>
     </div>
 
-    <!-- Details moved below to give the canvas full width -->
+    <!-- Details (below for spacing) -->
     <div class="details-wrap" aria-label="Details">
       <div class="drawer-card">
         <h3 id="dTitle">Hover or select a node</h3>
@@ -178,7 +176,7 @@
     </div>
   </section>
 
-  <!-- Explainer + Next + Founders (unchanged) -->
+  <!-- Rest unchanged -->
   <section class="card" aria-label="How data flows">
     <h2>How your data moves</h2>
     <ul class="bullets">
@@ -201,23 +199,26 @@
 </div>
 
 <script>
-/* ── 1) Model — sized for clarity with column lanes ─────────── */
+/* ── 1) Model sized on a 12px grid; generous insets ─────────── */
+const GRID = 12;
 const model = {
   mode:"air",
+  lanePad: 24,       // space from lane edges for connectors
+  nodePad: 18,       // space around nodes for connectors
   nodes:[
-    {id:"cloud", x:60,  y:120, w:300, h:200,
+    {id:"cloud", x:60,  y:132, w:320, h:208,
       title:"Cloud Sources", sub:"Vendor APIs • S3 • SaaS exports",
       items:["• Signed bundles","• Staged in DMZ"]},
-    {id:"local", x:60,  y:360, w:300, h:200,
+    {id:"local", x:60,  y:372, w:320, h:208,
       title:"Local Sources", sub:"Oracle • Postgres • SFTP • CSV",
       items:["• Read‑only credentials","• Checksums & manifests"]},
-    {id:"dmz",   x:430, y:220, w:260, h:180,
+    {id:"dmz",   x:456, y:252, w:252, h:192,
       title:"DMZ Update Agent", sub:"Signed pull & staging",
       items:["• Pull → verify","• No secrets at rest"]},
-    {id:"core",  x:760, y:120, w:380, h:300,
+    {id:"core",  x:792, y:132, w:360, h:312,
       title:"Veltrax Core", sub:"Apps • Postgres • Local LLM",
       items:["• Apps: Finex • Échelon • Verdict","• Postgres (local)","• Local LLM Engine"]},
-    {id:"roi",   x:760, y:460, w:380, h:200,
+    {id:"roi",   x:792, y:504, w:360, h:216,
       title:"ROI & Audit", sub:"Proof of value & compliance",
       items:["• Live savings & revenue","• JSONL + CSV/PDF","• Immutable hashes"]}
   ],
@@ -237,30 +238,14 @@ const model = {
   ]
 };
 
-/* ── 2) DOM & helpers ──────────────────────────────────────── */
+/* ── 2) DOM helpers ─────────────────────────────────────────── */
 const $=(q,el=document)=>el.querySelector(q);
 const arch=$("#arch"), gEdges=$("#edges"), gChips=$("#edgeChips"), gNodes=$("#nodes");
 const mode=$("#mode"), modeCaption=$("#modeCaption");
 const dTitle=$("#dTitle"), dList=$("#dList");
 
-function rrect(x,y,w,h,r=16){return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`;}
-function center(n){return {x:n.x+n.w/2, y:n.y+n.h/2};}
-
-/* Orthogonal router (Manhattan path) */
-function orthPath(a,b){
-  // Start at center of right edge (a) → mid channel → center of left/right edge (b)
-  const start={x:a.x+a.w, y:a.y+a.h/2};
-  const end={x:b.x, y:b.y+b.h/2};
-  const midX=(start.x+end.x)/2;
-  return `M${start.x},${start.y} H${midX} V${end.y} H${end.x}`;
-}
-function orthPathUp(a,b){ // core → roi (vertical drop)
-  const start={x:a.x+a.w/2, y:a.y+a.h};
-  const end={x:b.x+b.w/2, y:b.y};
-  const midY=(start.y+end.y)/2;
-  return `M${start.x},${start.y} V${midY} H${end.x} V${end.y}`;
-}
-function svgText(parent,x,y,cls,txt){const t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("class",cls);t.textContent=txt;parent.appendChild(t);return t;}
+function rr(x,y,w,h,r=16){return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`;}
+function clamp(n, min, max){return Math.max(min, Math.min(max, n));}
 function wrapText(t,x,y,maxWidth,lineHeight,text){
   t.textContent=""; let words=text.split(" "), line="", dy=0;
   words.forEach((w,i)=>{
@@ -275,59 +260,106 @@ function wrapText(t,x,y,maxWidth,lineHeight,text){
   last.setAttribute("x",x); last.setAttribute("y",y+dy);
   last.textContent=line; t.appendChild(last);
 }
+function T(parent,x,y,cls){const t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("class",cls);parent.appendChild(t);return t;}
 
-/* ── 3) Render (edges → chips → nodes) ─────────────────────── */
+/* ── 3) Manhattan router with margins ───────────────────────── */
+function orth(from,to){
+  const pad = model.nodePad;
+  const a = model.nodes.find(n=>n.id===from);
+  const b = model.nodes.find(n=>n.id===to);
+
+  // Start at right-middle of A with horizontal offset
+  const sx = a.x + a.w + pad;
+  const sy = a.y + a.h/2;
+
+  // End at left-middle of B with horizontal offset
+  const ex = b.x - pad;
+  const ey = b.y + b.h/2;
+
+  const mx = Math.round((sx+ex)/2/GRID)*GRID; // mid x snapped to grid
+
+  return `M${sx},${sy} H${mx} V${ey} H${ex}`;
+}
+function orthDown(from,to){
+  const pad = model.nodePad;
+  const a = model.nodes.find(n=>n.id===from);
+  const b = model.nodes.find(n=>n.id===to);
+
+  const sx = a.x + a.w/2;
+  const sy = a.y + a.h + pad;
+
+  const ex = b.x + b.w/2;
+  const ey = b.y - pad;
+
+  const my = Math.round((sy+ey)/2/GRID)*GRID;
+
+  return `M${sx},${sy} V${my} H${ex} V${ey}`;
+}
+
+/* ── 4) Render (edges → chips → nodes) ──────────────────────── */
 function render(){
   gEdges.innerHTML=""; gChips.innerHTML=""; gNodes.innerHTML="";
-  // Edges
+  // edges
   for(const e of model.edges){
-    const A=model.nodes.find(n=>n.id===e.from), B=model.nodes.find(n=>n.id===e.to);
-    const cfg=(model.mode==="dmz")?e.dmz:e.air;
+    const cfg = (mode.checked? e.dmz : e.air);
+    const d = (e.id==="e4") ? orthDown(e.from,e.to) : orth(e.from,e.to);
+
     const p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    const d = (e.id==="e4") ? orthPathUp(A,B) : orthPath(A,B);
     p.setAttribute("d",d); p.setAttribute("class",`edge ${cfg.cls}`);
     p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id;
     gEdges.appendChild(p);
 
-    // Label chip
-    const len=p.getTotalLength(), m=len*0.5, pt=p.getPointAtLength(m);
-    const chipW=Math.max(140,cfg.label.length*7), chipH=22, rx=9, ry=9;
+    // Edge chip sits above longest straight segment
+    const len = p.getTotalLength();
+    // sample points to find flattest (horizontal) segment region
+    let best = {flat:Infinity, s:len*0.45};
+    for(let s=len*0.2; s<=len*0.8; s+=len*0.05){
+      const a=p.getPointAtLength(s-1), b=p.getPointAtLength(s+1);
+      const slope = Math.abs((b.y-a.y)/(b.x-a.x||1));
+      if(slope<best.flat){best={flat:slope, s};}
+    }
+    const pt=p.getPointAtLength(best.s);
+    const chipW=Math.max(150, cfg.label.length*7), chipH=22, rx=9;
+    const cx = clamp(pt.x, 80, 1120); // keep inside viewbox
+    const cy = clamp(pt.y-28, 60, 760);
+
     const r=document.createElementNS(p.namespaceURI,"rect");
-    r.setAttribute("x",pt.x-chipW/2); r.setAttribute("y",pt.y-chipH-8);
+    r.setAttribute("x",cx-chipW/2); r.setAttribute("y",cy-chipH/2);
     r.setAttribute("width",chipW); r.setAttribute("height",chipH);
-    r.setAttribute("rx",rx); r.setAttribute("ry",ry); r.setAttribute("class","chip");
-    const tt=svgText(gChips,pt.x,pt.y-8+14-4,"chiptext",cfg.label); tt.setAttribute("text-anchor","middle");
+    r.setAttribute("rx",rx); r.setAttribute("ry",rx); r.setAttribute("class","chip");
+    const tt=T(gChips,cx,cy+4,"chiptext"); tt.setAttribute("text-anchor","middle"); tt.textContent=cfg.label;
     gChips.appendChild(r); gChips.appendChild(tt);
   }
-  // Nodes
+
+  // nodes
   for(const n of model.nodes){
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("class","node"); g.setAttribute("tabindex","0");
     g.setAttribute("role","button"); g.setAttribute("aria-label",n.title); g.dataset.id=n.id;
 
     const shape=document.createElementNS(g.namespaceURI,"path");
-    shape.setAttribute("d",rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
+    shape.setAttribute("d",rr(n.x,n.y,n.w,n.h)); g.appendChild(shape);
 
-    const title=svgText(g,n.x+n.w/2,n.y+38,"t-title",n.title); title.setAttribute("text-anchor","middle");
+    const title=T(g,n.x+n.w/2,n.y+38,"t-title"); title.setAttribute("text-anchor","middle"); title.textContent=n.title;
 
     const sub=document.createElementNS(g.namespaceURI,"text");
-    sub.setAttribute("class","t-sub"); wrapText(sub,n.x+18,n.y+66,n.w-36,18,n.sub); g.appendChild(sub);
+    sub.setAttribute("class","t-sub"); wrapText(sub,n.x+18,n.y+68,n.w-36,18,n.sub); g.appendChild(sub);
 
     n.items.forEach((line,i)=>{
       const t=document.createElementNS(g.namespaceURI,"text");
-      t.setAttribute("class","t-item"); wrapText(t,n.x+18,n.y+110+i*22,n.w-36,18,line); g.appendChild(t);
+      t.setAttribute("class","t-item"); wrapText(t,n.x+18,n.y+114+i*22,n.w-36,18,line); g.appendChild(t);
     });
+
     gNodes.appendChild(g);
   }
 }
 render();
 
-/* ── 4) Drawer interactions ───────────────────────────────── */
-const dTitleEl=$("#dTitle"), dListEl=$("#dList");
+/* ── 5) Drawer interactions ─────────────────────────────────── */
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
-  dTitleEl.textContent=n.title; dListEl.innerHTML="";
-  [n.sub,...n.items].slice(0,3).forEach(v=>{const li=document.createElement("li"); li.textContent=v.replace(/^•\s?/,''); dListEl.appendChild(li);});
+  dTitle.textContent=n.title; dList.innerHTML="";
+  [n.sub,...n.items].slice(0,3).forEach(v=>{const li=document.createElement("li"); li.textContent=v.replace(/^•\s?/,''); dList.appendChild(li);});
 }
 function clearCurrent(){[...gNodes.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current"));}
 gNodes.addEventListener("mouseover",e=>{const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id);});
@@ -335,7 +367,7 @@ gNodes.addEventListener("mouseout",e=>{const g=e.target.closest(".node"); if(!g)
 gNodes.addEventListener("click",e=>{const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);});
 gNodes.addEventListener("keydown",e=>{const g=e.target.closest(".node"); if(!g) return; if(e.key==="Enter"||e.key===" "){e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);}});
 
-/* ── 5) Mode toggle + animation ───────────────────────────── */
+/* ── 6) Mode toggle + animation ─────────────────────────────── */
 mode.addEventListener("change",()=>{
   model.mode = mode.checked ? "dmz" : "air";
   modeCaption.textContent = model.mode==="air" ? "Mode: Air‑gapped (manual signed packages)" : "Mode: DMZ relay (signed pull over mTLS)";
@@ -343,7 +375,7 @@ mode.addEventListener("change",()=>{
 });
 $("#simulate").addEventListener("click",()=>{
   const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{
-    const id=p.dataset.id; return id==="e3" || id==="e4" || id==="e1" || (id==="e2" && model.mode==="dmz");
+    const id=p.dataset.id; return id==="e3" || id==="e4" || id==="e1" || (id==="e2" && mode.checked);
   });
   paths.forEach(p=>pulse(p, 1100+Math.random()*700));
 });
