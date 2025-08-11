@@ -5,26 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Veltrax — Local‑First Platform Overview</title>
 <style>
-  /* ─────────────────────────────────────────────────────────
-     0) Veltrax Dark Tokens (no external libs)
-     ───────────────────────────────────────────────────────── */
-  :root{
-    --bg:#0d1117; --surface:#101624; --panel:#131a27;
-    --text:#e6ecf3; --muted:#9aa7b6; --border:#223047;
-    --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
-  }
-  [data-theme="light"]{
-    --bg:#f6f8fb; --surface:#ffffff; --panel:#f8faff;
-    --text:#0e1726; --muted:#5b6473; --border:#d7dfeb;
-    --accent:#6f42c1; --accent2:#3d6dff; --good:#14a66a; --ring:#325dff;
-  }
+  :root{ --bg:#0d1117; --surface:#101624; --panel:#131a27; --text:#e6ecf3; --muted:#9aa7b6; --border:#223047; --accent:#6f42c1; --accent2:#8aa4ff; --ring:#7aa3ff; }
+  [data-theme="light"]{ --bg:#f6f8fb; --surface:#ffffff; --panel:#f8faff; --text:#0e1726; --muted:#5b6473; --border:#d7dfeb; --accent:#6f42c1; --accent2:#3d6dff; --ring:#325dff; }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
   a{color:#8ab4ff;text-decoration:none}
   a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 
-  /* ── 1) Header ─────────────────────────────────────────── */
   header{position:sticky;top:0;z-index:50;background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:12px 14px}
   .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .title{margin:0;font-size:15px;font-weight:700;letter-spacing:.3px}
@@ -37,7 +25,6 @@
   .popover a{display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;color:var(--text)}
   .popover a:hover{background:rgba(127,136,155,.12)}
 
-  /* ── 2) Shell & Cards ──────────────────────────────────── */
   .container{max-width:1200px;margin:0 auto;padding:14px}
   .grid-two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
   .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
@@ -46,18 +33,18 @@
   .bullets{margin:6px 0 0 18px;color:var(--muted)}
   .small{color:var(--muted);font-size:13px}
 
-  /* ── 3) Main area (diagram + drawer) ───────────────────── */
-  main{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-top:12px}
+  main{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
   .canvas{position:relative;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-height:560px}
   svg{width:100%;height:100%}
-  aside#drawer{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
-  .drawer-title{font-weight:700;font-size:14px;margin-bottom:8px}
-  .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
-  .drawer-card h3{margin:0 0 6px 0;font-size:13px}
-  .drawer-card ul{margin:0 0 0 18px;padding:0}
-  .drawer-card li{margin:4px 0;color:var(--muted)}
 
-  /* ── 4) Diagram styles ─────────────────────────────────── */
+  /* Details moved below diagram */
+  #details{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
+  #details .drawer-title{font-weight:700;font-size:14px;margin-bottom:8px}
+  #details .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
+  #details .drawer-card h3{margin:0 0 6px 0;font-size:13px}
+  #details .drawer-card ul{margin:0 0 0 18px;padding:0}
+  #details .drawer-card li{margin:4px 0;color:var(--muted)}
+
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
   .node rect{fill:#0f1524;stroke:var(--border)}
@@ -72,7 +59,6 @@
   .chip{fill:#0f1320;stroke:var(--border);stroke-width:1;rx:6;ry:6}
   .chiptext{fill:#d9e1ee;font-size:12px}
 
-  /* ── 5) Controls (bottom of canvas) ───────────────────── */
   .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
   .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
   .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
@@ -84,30 +70,17 @@
   .pill{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
   .btnrow{display:flex;gap:8px;flex-wrap:wrap}
 
-  /* ── 6) Founders banner & Next teaser ─────────────────── */
   .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
   .founders strong{font-size:16px}
   .teaser{margin:14px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   .teaser .btn{font-weight:600}
 
   footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
-
-  /* ── 7) Responsive tweaks ─────────────────────────────── */
-  @media (max-width: 980px){
-    main{grid-template-columns:1fr}
-    aside#drawer{display:none}
-    .card h2{font-size:17px}
-    .controls{gap:12px}
-  }
-  @media (max-width: 560px){
-    body{font-size:16px}
-    .canvas{min-height:520px}
-    .controls{flex-direction:column;align-items:flex-start}
-  }
+  @media (max-width: 980px){ .grid-two{grid-template-columns:1fr} .controls{gap:12px} }
+  @media (max-width: 560px){ body{font-size:16px} .canvas{min-height:520px} .controls{flex-direction:column;align-items:flex-start} }
 </style>
 </head>
 <body>
-  <!-- Header -->
   <header aria-label="Top bar">
     <span class="logo" aria-hidden="true"></span>
     <h1 class="title">Veltrax — Local‑First Platform</h1>
@@ -124,7 +97,6 @@
   </header>
 
   <div class="container">
-    <!-- Intro -->
     <section class="grid-two" aria-label="Intro">
       <div class="card">
         <h2>What is Veltrax?</h2>
@@ -132,7 +104,7 @@
         <ul class="bullets">
           <li>Works with banking, retail, and legal data.</li>
           <li>Runs on hardware you control (workstation to DGX).</li>
-          <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
+          <li>Ships with real apps: Finex, Échelon, Verdict.</li>
         </ul>
         <p class="small">Everything below happens inside your network.</p>
       </div>
@@ -147,25 +119,19 @@
       </div>
     </section>
 
-    <!-- Diagram + Drawer -->
     <section aria-label="Architecture">
       <main>
         <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
-          <svg id="arch" viewBox="0 0 1200 700" aria-label="Sources and Cloud feed DMZ then Veltrax Core → ROI, Workstations">
+          <svg id="arch" viewBox="0 0 1200 700" aria-label="Sources → DMZ → Veltrax Core → ROI & Workstations">
             <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-                <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
-              </marker>
-              <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/>
-              </radialGradient>
+              <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path></marker>
+              <radialGradient id="pulse" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/></radialGradient>
             </defs>
             <g id="edges"></g>
             <g id="nodes"></g>
             <g id="labels"></g>
           </svg>
 
-          <!-- Controls -->
           <div class="controls" aria-label="Controls">
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <span class="switch" role="group" aria-label="Update mode">
@@ -183,26 +149,26 @@
             </div>
           </div>
         </div>
-
-        <aside id="drawer" aria-label="Details">
-          <div class="drawer-title">Details</div>
-          <div class="drawer-card">
-            <h3 id="dTitle">Hover or select a node</h3>
-            <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc closes.</li></ul>
-          </div>
-          <div class="drawer-card">
-            <h3>Security (simple)</h3>
-            <ul>
-              <li>Zero SaaS LLM by default; everything runs local.</li>
-              <li>Signed updates only. Optional quorum signatures.</li>
-              <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
-            </ul>
-          </div>
-        </aside>
       </main>
+
+      <!-- Details moved below diagram -->
+      <section id="details" aria-label="Details" class="card">
+        <div class="drawer-title">Details</div>
+        <div class="drawer-card">
+          <h3 id="dTitle">Hover or select a node</h3>
+          <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc closes.</li></ul>
+        </div>
+        <div class="drawer-card">
+          <h3>Security (simple)</h3>
+          <ul>
+            <li>Zero SaaS LLM by default; everything runs local.</li>
+            <li>Signed updates only. Optional quorum signatures.</li>
+            <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
+          </ul>
+        </div>
+      </section>
     </section>
 
-    <!-- Plain-language explainer -->
     <section class="card" aria-label="How data flows">
       <h2>How your data moves</h2>
       <ul class="bullets">
@@ -212,7 +178,6 @@
       </ul>
     </section>
 
-    <!-- Next + Founders -->
     <div class="teaser" role="region" aria-label="Next step">
       <div><strong>Next:</strong> Local LLM Deployment Simulator — size models to your hardware.</div>
       <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
@@ -228,87 +193,54 @@
   </div>
 
 <script>
-/* ─────────────────────────────────────────────────────────
-   1) Model — nodes & edges with dual modes
-   ───────────────────────────────────────────────────────── */
 const model = {
   mode: "air",
   nodes: [
-    { id:"cloud", x:40,  y:60,  w:300, h:140,
-      title:"Cloud Vendors", subtitle:"AWS • Azure • GCP • SaaS",
+    { id:"cloud", x:60,  y:120, w:280, h:110, title:"Cloud Vendors", subtitle:"AWS • Azure • GCP • SaaS",
       bullets:{ Purpose:["Bring off‑site data safely"], Protocols:["HTTPS/mTLS • Signed bundles"], Security:["DMZ stages & verifies"] } },
-    { id:"local", x:40,  y:230, w:300, h:160,
-      title:"Local Sources", subtitle:"Oracle • Postgres • SFTP • CSV",
+    { id:"local", x:60,  y:260, w:280, h:130, title:"Local Sources", subtitle:"Oracle • Postgres • SFTP • CSV",
       bullets:{ Purpose:["Read‑only sync from systems"], Protocols:["JDBC/ODBC • SFTP"], Security:["Least‑privilege access"] } },
-    { id:"dmz",   x:380, y:110, w:280, h:120,
-      title:"DMZ Update Agent", subtitle:"Signed pull & staging",
+    { id:"dmz",   x:380, y:180, w:260, h:100, title:"DMZ Update Agent", subtitle:"Signed pull & staging",
       bullets:{ Purpose:["Pull → stage → verify"], Protocols:["mTLS • Cosign/Sigstore"], Security:["No secrets at rest"] } },
-    { id:"core",  x:690, y:60,  w:400, h:260,
-      title:"Veltrax Core", subtitle:"Apps • Postgres • Local LLM",
+    { id:"core",  x:680, y:120, w:380, h:220, title:"Veltrax Core", subtitle:"Apps • Postgres • Local LLM",
       bullets:{ Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"], Protocols:["gRPC/HTTP • JWT/RBAC"], Security:["AES‑256 at rest • Audit logs"] } },
-    { id:"roi",   x:690, y:340, w:400, h:160,
-      title:"ROI & Audit", subtitle:"Proof of value & compliance",
+    { id:"roi",   x:680, y:360, w:380, h:140, title:"ROI & Audit", subtitle:"Proof of value & compliance",
       bullets:{ Purpose:["Live savings & revenue"], Protocols:["JSONL • CSV/PDF"], Security:["Immutable hashes"] } },
-    { id:"work",  x:1110-240, y:240, w:220, h:120,
-      title:"Employee Workstations", subtitle:"Analysts • Operators",
+    { id:"work",  x:1080-220, y:260, w:220, h:110, title:"Employee Workstations", subtitle:"Analysts • Operators",
       bullets:{ Purpose:["Use apps with local data"], Protocols:["HTTPS • SSO"], Security:["RBAC • Least privilege"] } },
   ],
   edges: [
-    { id:"e1", from:"cloud", to:"dmz",
-      air:{label:"Air‑gap active (stage offline)", cls:"air"}, dmz:{label:"Signed pull over mTLS", cls:"dmz"} },
-    { id:"e2", from:"dmz", to:"core",
-      air:{label:"Manual carry‑in after verify", cls:"air"}, dmz:{label:"Verified package → apply", cls:"dmz"} },
-    { id:"e3", from:"local", to:"core",
-      air:{label:"Direct read‑only sync", cls:"dmz"}, dmz:{label:"Direct read‑only sync", cls:"dmz"} },
-    { id:"e4", from:"core", to:"roi",
-      air:{label:"Local logs → ROI/Audit", cls:"dmz"}, dmz:{label:"Local logs → ROI/Audit", cls:"dmz"} },
-    { id:"e5", from:"core", to:"work",
-      air:{label:"Apps served on LAN", cls:"dmz"}, dmz:{label:"Apps served on LAN", cls:"dmz"} }
+    { id:"e1", from:"cloud", to:"dmz", air:{label:"Air‑gap active (stage offline)", cls:"air"}, dmz:{label:"Signed pull over mTLS", cls:"dmz"} },
+    { id:"e2", from:"dmz", to:"core",   air:{label:"Manual carry‑in after verify", cls:"air"}, dmz:{label:"Verified package → apply", cls:"dmz"} },
+    { id:"e3", from:"local", to:"core",  air:{label:"Direct read‑only sync", cls:"dmz"}, dmz:{label:"Direct read‑only sync", cls:"dmz"} },
+    { id:"e4", from:"core", to:"roi",    air:{label:"Local logs → ROI/Audit", cls:"dmz"}, dmz:{label:"Local logs → ROI/Audit", cls:"dmz"} },
+    { id:"e5", from:"core", to:"work",   air:{label:"Apps served on LAN", cls:"dmz"}, dmz:{label:"Apps served on LAN", cls:"dmz"} },
   ]
 };
 
-/* ─────────────────────────────────────────────────────────
-   2) DOM refs
-   ───────────────────────────────────────────────────────── */
 const $ = (q, el=document)=>el.querySelector(q);
 const arch=$("#arch"), gE=$("#edges"), gN=$("#nodes"), gL=$("#labels");
 const mode=$("#mode"), caption=$("#modeCaption");
 const dTitle=$("#dTitle"), dList=$("#dList");
 
-/* ─────────────────────────────────────────────────────────
-   3) Geometry helpers
-   ───────────────────────────────────────────────────────── */
 function rrect(x,y,w,h,r=16){ return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`; }
-function center(n){ return {x:n.x+n.w/2, y:n.y+n.h/2}; }
-function curve(from,to){
-  const A=center(from), B=center(to); const dx=B.x-A.x, dy=B.y-A.y;
-  const c1=`${A.x+dx*0.35},${A.y+dy*0.1}`, c2=`${A.x+dx*0.7},${A.y+dy*0.9}`;
-  return `M${A.x},${A.y} C${c1} ${c2} ${B.x},${B.y}`;
-}
+function edgeLine(from,to){ const x1=from.x+from.w, y1=from.y+from.h/2; const x2=to.x, y2=to.y+to.h/2; return `M${x1},${y1} L${x2},${y2}`; }
 
-/* ─────────────────────────────────────────────────────────
-   4) Render diagram (edges under nodes, chip labels)
-   ───────────────────────────────────────────────────────── */
 function render(){
   gE.innerHTML=""; gN.innerHTML=""; gL.innerHTML="";
-  // Edges first
   for(const e of model.edges){
     const from=model.nodes.find(n=>n.id===e.from), to=model.nodes.find(n=>n.id===e.to);
     const cfg=(model.mode==="dmz")?e.dmz:e.air;
     const p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    p.setAttribute("d",curve(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
+    p.setAttribute("d",edgeLine(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
     p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id; gE.appendChild(p);
-    // Label chip
-    const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.55);
-    const text=document.createElementNS("http://www.w3.org/2000/svg","text");
-    text.setAttribute("class","chiptext"); text.textContent=cfg.label;
-    gL.appendChild(text); text.setAttribute("x", pt.x); text.setAttribute("y", pt.y);
+    const len=p.getTotalLength(); const mid=len*0.5; const pt=p.getPointAtLength(mid);
+    const text=document.createElementNS("http://www.w3.org/2000/svg","text"); text.setAttribute("class","chiptext"); text.textContent=cfg.label; gL.appendChild(text); text.setAttribute("x", pt.x); text.setAttribute("y", pt.y);
     const bb=text.getBBox(); const pad=6; const bg=document.createElementNS("http://www.w3.org/2000/svg","rect");
     bg.setAttribute("class","chip"); bg.setAttribute("x", bb.x-pad); bg.setAttribute("y", bb.y-10-pad);
     bg.setAttribute("width", bb.width+pad*2); bg.setAttribute("height", bb.height+pad*2);
     gL.insertBefore(bg, text); text.setAttribute("y", bb.y-2); text.setAttribute("text-anchor","middle"); text.setAttribute("x", bb.x+bb.width/2);
   }
-  // Nodes
   for(const n of model.nodes){
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("class","node"); g.setAttribute("tabindex","0"); g.setAttribute("role","button"); g.setAttribute("aria-label",n.title); g.dataset.id=n.id;
@@ -323,17 +255,11 @@ function render(){
 }
 render();
 
-/* ─────────────────────────────────────────────────────────
-   5) Drawer behavior
-   ───────────────────────────────────────────────────────── */
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
   dTitle.textContent=n.title; dList.innerHTML="";
-  [
-    ["Purpose", n.bullets.Purpose?.[0]||""],
-    ["Protocols", n.bullets.Protocols?.[0]||""],
-    ["Security", n.bullets.Security?.[0]||""]
-  ].forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
+  [["Purpose", n.bullets.Purpose?.[0]||""],["Protocols", n.bullets.Protocols?.[0]||""],["Security", n.bullets.Security?.[0]||""]]
+    .forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
 }
 function clearCurrent(){ [...gN.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
 
@@ -343,75 +269,30 @@ gN.addEventListener("click",e=>{ const g=e.target.closest(".node"); if(!g) retur
 gN.addEventListener("keydown",e=>{ const g=e.target.closest(".node"); if(!g) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);} });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") clearCurrent(); });
 
-/* ─────────────────────────────────────────────────────────
-   6) Mode toggle + caption
-   ───────────────────────────────────────────────────────── */
 mode.addEventListener("change",()=>{
   model.mode = mode.checked ? "dmz" : "air";
-  caption.textContent = model.mode==="air"
-    ? "Mode: Air‑gapped (manual signed packages)"
-    : "Mode: DMZ relay (signed pull over mTLS)";
+  caption.textContent = model.mode==="air" ? "Mode: Air‑gapped (manual signed packages)" : "Mode: DMZ relay (signed pull over mTLS)";
   render();
 });
 
-/* ─────────────────────────────────────────────────────────
-   7) Simulation (moving dots along edges)
-   ───────────────────────────────────────────────────────── */
 $("#simulate").addEventListener("click",()=>{
-  const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{
-    const id=p.dataset.id; return id!=="e2" ? true : model.mode==="dmz"; // e2 only in DMZ mode
-  });
-  paths.forEach(p=>pulse(p, 1100 + Math.random()*700));
+  const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{ const id=p.dataset.id; return id!=="e2" ? true : model.mode==="dmz"; });
+  paths.forEach(p=>pulse(p, 1000 + Math.random()*800));
 });
 function pulse(edgePath, ms){
-  const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
-  dot.setAttribute("r","5"); dot.setAttribute("fill","url(#pulse)");
-  arch.appendChild(dot);
+  const dot=document.createElementNS("http://www.w3.org/2000/svg","circle"); dot.setAttribute("r","5"); dot.setAttribute("fill","url(#pulse)"); arch.appendChild(dot);
   const len=edgePath.getTotalLength(), t0=performance.now();
-  (function step(t){
-    const k=Math.min(1,(t-t0)/ms), pt=edgePath.getPointAtLength(k*len);
-    dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y);
-    if(k<1) requestAnimationFrame(step); else arch.removeChild(dot);
-  })(t0);
+  (function step(t){ const k=Math.min(1,(t-t0)/ms), pt=edgePath.getPointAtLength(k*len); dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y); if(k<1) requestAnimationFrame(step); else arch.removeChild(dot); })(t0);
 }
 
-/* ─────────────────────────────────────────────────────────
-   8) Top bar interactions (theme + products)
-   ───────────────────────────────────────────────────────── */
-const themeBtn=document.querySelector('#theme');
-const root=document.documentElement;
-themeBtn.addEventListener('click',()=>{
-  const isLight=root.getAttribute('data-theme')==='light';
-  root.setAttribute('data-theme', isLight? 'dark' : 'light');
-  themeBtn.setAttribute('aria-pressed', String(!isLight));
-});
+const themeBtn=document.querySelector('#theme'); const root=document.documentElement;
+themeBtn.addEventListener('click',()=>{ const isLight=root.getAttribute('data-theme')==='light'; root.setAttribute('data-theme', isLight? 'dark' : 'light'); themeBtn.setAttribute('aria-pressed', String(!isLight)); });
 
-const productsBtn=document.querySelector('#productsBtn');
-const productsMenu=document.querySelector('#productsMenu');
-productsBtn.addEventListener('click',()=>{
-  const open = productsMenu.getAttribute('data-open')==='true';
-  productsMenu.setAttribute('data-open', String(!open));
-  productsBtn.setAttribute('aria-expanded', String(!open));
-});
-document.addEventListener('click',(e)=>{
-  if(!productsMenu.contains(e.target) && e.target!==productsBtn){
-    productsMenu.setAttribute('data-open','false'); productsBtn.setAttribute('aria-expanded','false');
-  }
-});
-productsMenu.addEventListener('click',(e)=>{
-  const a=e.target.closest('a'); if(!a) return; e.preventDefault();
-  const act=a.dataset.action||'';
-  if(act==='open-finex') alert('Open Finex Demo (hook to route)');
-  if(act==='open-echelon') alert('Open Échelon Demo (hook to route)');
-  if(act==='open-verdict') alert('Open Verdict Demo (hook to route)');
-});
+const productsBtn=document.querySelector('#productsBtn'); const productsMenu=document.querySelector('#productsMenu');
+productsBtn.addEventListener('click',()=>{ const open = productsMenu.getAttribute('data-open')==='true'; productsMenu.setAttribute('data-open', String(!open)); productsBtn.setAttribute('aria-expanded', String(!open)); });
+document.addEventListener('click',(e)=>{ if(!productsMenu.contains(e.target) && e.target!==productsBtn){ productsMenu.setAttribute('data-open','false'); productsBtn.setAttribute('aria-expanded','false'); }});
+productsMenu.addEventListener('click',(e)=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); const act=a.dataset.action||''; if(act==='open-finex') alert('Open Finex Demo (hook)'); if(act==='open-echelon') alert('Open Échelon Demo (hook)'); if(act==='open-verdict') alert('Open Verdict Demo (hook)'); });
 
-// Bottom quick links (placeholder handlers)
-document.querySelector('#openFinex').addEventListener('click',e=>{e.preventDefault();alert('Open Finex Demo (hook)');});
-document.querySelector('#openSecurity').addEventListener('click',e=>{e.preventDefault();alert('Security Model (hook)');});
-document.querySelector('#openRoi').addEventListener('click',e=>{e.preventDefault();alert('ROI Explorer (hook)');});
-
-/* Default details */
 showDetails("cloud");
 </script>
 </body>
