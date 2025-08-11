@@ -8,8 +8,8 @@
   :root{
     --bg:#0d1117; --surface:#0f1520; --panel:#121a26;
     --text:#e6ecf3; --muted:#9aa7b6; --border:#223047;
-    --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
-    --chip:#0c1220; --chipBorder:#2a3754;
+    --accent:#6f42c1; --accent2:#8aa4ff; --ring:#7aa3ff;
+    --chip:#0c1220; --chipBorder:#2a3754; --lane:#0a111d;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -17,12 +17,7 @@
   a{color:#8ab4ff;text-decoration:none}
   a:focus-visible,button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 
-  header{
-    position:sticky;top:0;z-index:30;
-    background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);
-    border-bottom:1px solid var(--border);
-    display:flex;align-items:center;gap:10px;padding:12px 14px;
-  }
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:12px 14px}
   .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .title{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
 
@@ -34,24 +29,26 @@
   .bullets{margin:8px 0 0 18px;color:var(--muted)}
   .small{color:var(--muted);font-size:13px}
 
-  main{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-top:12px}
-  .canvas{position:relative;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-height:600px}
+  /* Main area: full-width canvas, details below for more room */
+  .canvas{position:relative;border:1px solid var(--border);border-radius:16px;background:var(--surface);min-height:660px;margin-top:12px}
   svg{width:100%;height:100%}
-  aside#drawer{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
-  .drawer-title{font-weight:800;font-size:14px;margin-bottom:8px}
-  .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
-  .drawer-card h3{margin:0 0 6px 0;font-size:13px}
+
+  /* Details block (moved below) */
+  .details-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .drawer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .drawer-card h3{margin:0 0 6px 0;font-size:14px}
   .drawer-card ul{margin:0 0 0 18px;padding:0}
   .drawer-card li{margin:4px 0;color:var(--muted)}
 
-  /* SVG readability */
+  /* Diagram aesthetics */
+  .lane{fill:var(--lane);stroke:var(--border);stroke-width:1;opacity:.6}
   .node{cursor:pointer;transition:filter .15s ease}
-  .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
+  .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 14px rgba(111,66,193,.45))}
   .node rect,.node path{fill:#0d1421;stroke:var(--border)}
-  .node .t-title{fill:var(--text);font-size:16px;font-weight:700}
-  .node .t-sub{fill:var(--muted);font-size:13px}
-  .node .t-item{fill:var(--muted);font-size:13px}
-  .edge{stroke:#7b8497;stroke-width:2.4;fill:none}
+  .node .t-title{fill:var(--text);font-size:18px;font-weight:800}
+  .node .t-sub{fill:var(--muted);font-size:14px}
+  .node .t-item{fill:var(--muted);font-size:14px}
+  .edge{stroke:#7b8497;stroke-width:2.6;fill:none}
   .edge.air{stroke-dasharray:7 5;stroke:#9aa6bb}
   .edge.dmz{stroke:var(--accent)}
   .chip{fill:var(--chip);stroke:var(--chipBorder);stroke-width:1}
@@ -73,150 +70,155 @@
   footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
 
   @media (max-width: 980px){
-    main{grid-template-columns:1fr}
-    aside#drawer{display:none}
-    .node .t-title{font-size:18px}
-    .node .t-sub,.node .t-item{font-size:14px}
-    .controls{gap:12px}
+    .grid-two{grid-template-columns:1fr}
+    .details-wrap{grid-template-columns:1fr}
+    .node .t-title{font-size:20px}
+    .node .t-sub,.node .t-item{font-size:15px}
+    .canvas{min-height:640px}
   }
   @media (max-width: 560px){
     body{font-size:16px}
-    .canvas{min-height:560px}
     .controls{flex-direction:column;align-items:flex-start}
   }
 </style>
 </head>
 <body>
-  <header aria-label="Top bar">
-    <span class="logo" aria-hidden="true"></span>
-    <h1 class="title">Veltrax — Local‑First Platform</h1>
-  </header>
+<header aria-label="Top bar">
+  <span class="logo" aria-hidden="true"></span>
+  <h1 class="title">Veltrax — Local‑First Platform</h1>
+</header>
 
-  <div class="container">
-    <section class="grid-two" aria-label="Intro">
-      <div class="card">
-        <h2>What is Veltrax?</h2>
-        <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
-        <ul class="bullets">
-          <li>Works with banking, retail, and legal data.</li>
-          <li>Runs on hardware you control (workstation to DGX).</li>
-          <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
-        </ul>
-        <p class="small">Everything below happens inside your network.</p>
-      </div>
-      <div class="card">
-        <h2>Why local‑first?</h2>
-        <ul class="bullets">
-          <li><strong>Privacy & control:</strong> sensitive data never leaves your building.</li>
-          <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
-          <li><strong>Proof:</strong> everything is audit‑logged so ROI is visible.</li>
-        </ul>
-        <p>Run fully air‑gapped, or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
-      </div>
-    </section>
-
-    <section aria-label="Architecture">
-      <main>
-        <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
-          <svg id="arch" viewBox="0 0 1200 700" aria-label="Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
-            <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-                <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
-              </marker>
-              <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/>
-              </radialGradient>
-            </defs>
-            <!-- Layers: edges under everything, then chips, then nodes -->
-            <g id="edges" aria-hidden="true"></g>
-            <g id="edgeChips" aria-hidden="true"></g>
-            <g id="nodes"></g>
-          </svg>
-
-          <div class="controls" aria-label="Controls">
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <span class="switch" role="group" aria-label="Update mode">
-                <span aria-hidden="true">Air‑gapped</span>
-                <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
-                <span aria-hidden="true">DMZ relay</span>
-              </span>
-              <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
-            </div>
-            <span class="chipline" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
-          </div>
-        </div>
-
-        <aside id="drawer" aria-label="Details">
-          <div class="drawer-title">Details</div>
-          <div class="drawer-card">
-            <h3 id="dTitle">Hover or select a node</h3>
-            <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc clears focus.</li></ul>
-          </div>
-          <div class="drawer-card">
-            <h3>Security (simple)</h3>
-            <ul>
-              <li>Signed updates only. Optional quorum signatures.</li>
-              <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
-              <li>AES‑256 at rest. Every action is audit‑logged.</li>
-            </ul>
-          </div>
-          <div class="drawer-card">
-            <h3>Update modes</h3>
-            <ul>
-              <li><strong>Air‑gapped:</strong> carry‑in signed media, then verify & apply.</li>
-              <li><strong>DMZ relay:</strong> scheduled signed pulls, verify in staging, then apply.</li>
-              <li>Both paths keep full audit trails.</li>
-            </ul>
-          </div>
-        </aside>
-      </main>
-    </section>
-
-    <section class="card" aria-label="How data flows">
-      <h2>How your data moves</h2>
+<div class="container">
+  <!-- Intro keeps as-is -->
+  <section class="grid-two" aria-label="Intro">
+    <div class="card">
+      <h2>What is Veltrax?</h2>
+      <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
       <ul class="bullets">
-        <li><strong>Cloud sources</strong> (vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
-        <li><strong>Local sources</strong> (Oracle, Postgres, CSV, SFTP) can feed the Core directly using read‑only credentials.</li>
-        <li>Inside the <strong>Veltrax Core</strong> we run your apps, the local database, and a local LLM. Results stream to <strong>ROI & Audit</strong>.</li>
+        <li>Works with banking, retail, and legal data.</li>
+        <li>Runs on hardware you control (workstation to DGX).</li>
+        <li>Ships with real apps: Finex (Banking), Échelon (Retail), Verdict (Legal).</li>
       </ul>
-    </section>
+      <p class="small">Everything below happens inside your network.</p>
+    </div>
+    <div class="card">
+      <h2>Why local‑first?</h2>
+      <ul class="bullets">
+        <li><strong>Privacy & control:</strong> sensitive data never leaves your building.</li>
+        <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
+        <li><strong>Proof:</strong> everything is audit‑logged so ROI is visible.</li>
+      </ul>
+      <p>Run fully air‑gapped, or use a locked‑down DMZ relay that pulls signed packages on a schedule.</p>
+    </div>
+  </section>
 
-    <div class="teaser" role="region" aria-label="Next step">
-      <div><strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.</div>
-      <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
+  <!-- Rebuilt DIAGRAM -->
+  <section aria-label="Architecture">
+    <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
+      <svg id="arch" viewBox="0 0 1200 720" aria-label="Cloud & Local sources funnel into Veltrax Core with ROI & Audit">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+            <path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path>
+          </marker>
+          <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Swimlanes for structure -->
+        <g aria-hidden="true">
+          <rect class="lane" x="32" y="40" width="340" height="640" rx="14"/>
+          <rect class="lane" x="402" y="40" width="300" height="640" rx="14"/>
+          <rect class="lane" x="732" y="40" width="436" height="640" rx="14"/>
+        </g>
+
+        <!-- Edges under everything -->
+        <g id="edges" aria-hidden="true"></g>
+        <g id="edgeChips" aria-hidden="true"></g>
+        <!-- Nodes on top -->
+        <g id="nodes"></g>
+      </svg>
+
+      <!-- Controls -->
+      <div class="controls" aria-label="Controls">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span class="switch" role="group" aria-label="Update mode">
+            <span aria-hidden="true">Air‑gapped</span>
+            <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
+            <span aria-hidden="true">DMZ relay</span>
+          </span>
+          <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
+        </div>
+        <span class="chipline" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
+      </div>
     </div>
 
-    <div class="founders" role="note" aria-label="Founders Program">
-      <strong>Founders Program:</strong> 30% upfront, milestone deliveries. <strong>First 5 get 15% off + 1 year support.</strong>
+    <!-- Details moved below to give the canvas full width -->
+    <div class="details-wrap" aria-label="Details">
+      <div class="drawer-card">
+        <h3 id="dTitle">Hover or select a node</h3>
+        <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc clears focus.</li></ul>
+      </div>
+      <div class="drawer-card">
+        <h3>Security (simple)</h3>
+        <ul>
+          <li>Signed updates only. Optional quorum signatures.</li>
+          <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
+          <li>AES‑256 at rest. Every action is audit‑logged.</li>
+        </ul>
+      </div>
+      <div class="drawer-card">
+        <h3>Update modes</h3>
+        <ul>
+          <li><strong>Air‑gapped:</strong> carry‑in signed media, then verify & apply.</li>
+          <li><strong>DMZ relay:</strong> scheduled signed pulls, verify in staging, then apply.</li>
+          <li>Both paths keep full audit trails.</li>
+        </ul>
+      </div>
     </div>
+  </section>
 
-    <footer><small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small></footer>
+  <!-- Explainer + Next + Founders (unchanged) -->
+  <section class="card" aria-label="How data flows">
+    <h2>How your data moves</h2>
+    <ul class="bullets">
+      <li><strong>Cloud sources</strong> (vendor APIs, S3, SaaS exports) land in the <em>DMZ Update Agent</em>. We verify signatures, then deliver packages into the Core.</li>
+      <li><strong>Local sources</strong> (Oracle, Postgres, CSV, SFTP) can feed the Core directly using read‑only credentials.</li>
+      <li>Inside the <strong>Veltrax Core</strong> we run your apps, the local database, and a local LLM. Results stream to <strong>ROI & Audit</strong>.</li>
+    </ul>
+  </section>
+
+  <div class="teaser" role="region" aria-label="Next step">
+    <div><strong>Next:</strong> Local LLM Deployment Simulator — see how we size models to your hardware.</div>
+    <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
   </div>
 
+  <div class="founders" role="note" aria-label="Founders Program">
+    <strong>Founders Program:</strong> 30% upfront, milestone deliveries. <strong>First 5 get 15% off + 1 year support.</strong>
+  </div>
+
+  <footer><small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small></footer>
+</div>
+
 <script>
-/* ── 1) Model with roomier boxes and bigger copy ───────────────── */
+/* ── 1) Model — sized for clarity with column lanes ─────────── */
 const model = {
   mode:"air",
   nodes:[
-    {id:"cloud", x:60,  y:100, w:300, h:180,
-      title:"Cloud Sources",
-      sub:"Vendor APIs • S3 • SaaS exports",
+    {id:"cloud", x:60,  y:120, w:300, h:200,
+      title:"Cloud Sources", sub:"Vendor APIs • S3 • SaaS exports",
       items:["• Signed bundles","• Staged in DMZ"]},
-    {id:"local", x:60,  y:320, w:300, h:180,
-      title:"Local Sources",
-      sub:"Oracle • Postgres • SFTP • CSV",
-      items:["• Read‑only creds","• Checksums & manifests"]},
-    {id:"dmz",   x:400, y:160, w:270, h:130,
-      title:"DMZ Update Agent",
-      sub:"Signed pull & staging",
+    {id:"local", x:60,  y:360, w:300, h:200,
+      title:"Local Sources", sub:"Oracle • Postgres • SFTP • CSV",
+      items:["• Read‑only credentials","• Checksums & manifests"]},
+    {id:"dmz",   x:430, y:220, w:260, h:180,
+      title:"DMZ Update Agent", sub:"Signed pull & staging",
       items:["• Pull → verify","• No secrets at rest"]},
-    {id:"core",  x:720, y:70,  w:400, h:300,
-      title:"Veltrax Core",
-      sub:"Apps • Postgres • Local LLM",
+    {id:"core",  x:760, y:120, w:380, h:300,
+      title:"Veltrax Core", sub:"Apps • Postgres • Local LLM",
       items:["• Apps: Finex • Échelon • Verdict","• Postgres (local)","• Local LLM Engine"]},
-    {id:"roi",   x:720, y:390, w:400, h:190,
-      title:"ROI & Audit",
-      sub:"Proof of value & compliance",
+    {id:"roi",   x:760, y:460, w:380, h:200,
+      title:"ROI & Audit", sub:"Proof of value & compliance",
       items:["• Live savings & revenue","• JSONL + CSV/PDF","• Immutable hashes"]}
   ],
   edges:[
@@ -235,7 +237,7 @@ const model = {
   ]
 };
 
-/* ── 2) DOM & helpers ─────────────────────────────────────────── */
+/* ── 2) DOM & helpers ──────────────────────────────────────── */
 const $=(q,el=document)=>el.querySelector(q);
 const arch=$("#arch"), gEdges=$("#edges"), gChips=$("#edgeChips"), gNodes=$("#nodes");
 const mode=$("#mode"), modeCaption=$("#modeCaption");
@@ -243,23 +245,30 @@ const dTitle=$("#dTitle"), dList=$("#dList");
 
 function rrect(x,y,w,h,r=16){return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`;}
 function center(n){return {x:n.x+n.w/2, y:n.y+n.h/2};}
-function curve(a,b){
-  const A=center(a), B=center(b), dx=B.x-A.x, dy=B.y-A.y;
-  const c1=`${A.x+dx*0.35},${A.y+dy*0.12}`, c2=`${A.x+dx*0.7},${A.y+dy*0.88}`;
-  return `M${A.x},${A.y} C${c1} ${c2} ${B.x},${B.y}`;
+
+/* Orthogonal router (Manhattan path) */
+function orthPath(a,b){
+  // Start at center of right edge (a) → mid channel → center of left/right edge (b)
+  const start={x:a.x+a.w, y:a.y+a.h/2};
+  const end={x:b.x, y:b.y+b.h/2};
+  const midX=(start.x+end.x)/2;
+  return `M${start.x},${start.y} H${midX} V${end.y} H${end.x}`;
+}
+function orthPathUp(a,b){ // core → roi (vertical drop)
+  const start={x:a.x+a.w/2, y:a.y+a.h};
+  const end={x:b.x+b.w/2, y:b.y};
+  const midY=(start.y+end.y)/2;
+  return `M${start.x},${start.y} V${midY} H${end.x} V${end.y}`;
 }
 function svgText(parent,x,y,cls,txt){const t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("class",cls);t.textContent=txt;parent.appendChild(t);return t;}
-/* simple word-wrap inside width using tspans */
 function wrapText(t,x,y,maxWidth,lineHeight,text){
   t.textContent=""; let words=text.split(" "), line="", dy=0;
   words.forEach((w,i)=>{
-    const test=line?line+" "+w:w;
-    t.textContent=test;
+    const test=line?line+" "+w:w; t.textContent=test;
     if(t.getComputedTextLength()>maxWidth && i>0){
       const tsp=document.createElementNS(t.namespaceURI,"tspan");
       tsp.setAttribute("x",x); tsp.setAttribute("y",y+dy);
-      tsp.textContent=line; t.appendChild(tsp);
-      line=w; dy+=lineHeight;
+      tsp.textContent=line; t.appendChild(tsp); line=w; dy+=lineHeight;
     }else{ line=test; }
   });
   const last=document.createElementNS(t.namespaceURI,"tspan");
@@ -267,30 +276,30 @@ function wrapText(t,x,y,maxWidth,lineHeight,text){
   last.textContent=line; t.appendChild(last);
 }
 
-/* ── 3) Render (edges → chips → nodes) ───────────────────────── */
+/* ── 3) Render (edges → chips → nodes) ─────────────────────── */
 function render(){
   gEdges.innerHTML=""; gChips.innerHTML=""; gNodes.innerHTML="";
-  // edges
+  // Edges
   for(const e of model.edges){
-    const from=model.nodes.find(n=>n.id===e.from), to=model.nodes.find(n=>n.id===e.to);
+    const A=model.nodes.find(n=>n.id===e.from), B=model.nodes.find(n=>n.id===e.to);
     const cfg=(model.mode==="dmz")?e.dmz:e.air;
     const p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    p.setAttribute("d",curve(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
+    const d = (e.id==="e4") ? orthPathUp(A,B) : orthPath(A,B);
+    p.setAttribute("d",d); p.setAttribute("class",`edge ${cfg.cls}`);
     p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id;
     gEdges.appendChild(p);
 
-    // edge label chip positioned away from nodes
-    const len=p.getTotalLength(), m=len*0.55, pt=p.getPointAtLength(m);
-    const chipW= Math.max(120, cfg.label.length*7); const chipH=20;
-    const rx=8, ry=8, cx=pt.x+8, cy=pt.y-26; // slight offset to avoid overlap
+    // Label chip
+    const len=p.getTotalLength(), m=len*0.5, pt=p.getPointAtLength(m);
+    const chipW=Math.max(140,cfg.label.length*7), chipH=22, rx=9, ry=9;
     const r=document.createElementNS(p.namespaceURI,"rect");
-    r.setAttribute("x",cx-chipW/2); r.setAttribute("y",cy-chipH/2);
+    r.setAttribute("x",pt.x-chipW/2); r.setAttribute("y",pt.y-chipH-8);
     r.setAttribute("width",chipW); r.setAttribute("height",chipH);
     r.setAttribute("rx",rx); r.setAttribute("ry",ry); r.setAttribute("class","chip");
-    const tt=svgText(gChips,cx,cy+4,"chiptext",cfg.label); tt.setAttribute("text-anchor","middle");
+    const tt=svgText(gChips,pt.x,pt.y-8+14-4,"chiptext",cfg.label); tt.setAttribute("text-anchor","middle");
     gChips.appendChild(r); gChips.appendChild(tt);
   }
-  // nodes
+  // Nodes
   for(const n of model.nodes){
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("class","node"); g.setAttribute("tabindex","0");
@@ -299,34 +308,34 @@ function render(){
     const shape=document.createElementNS(g.namespaceURI,"path");
     shape.setAttribute("d",rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
 
-    const title=svgText(g,n.x+n.w/2,n.y+36,"t-title",n.title); title.setAttribute("text-anchor","middle");
+    const title=svgText(g,n.x+n.w/2,n.y+38,"t-title",n.title); title.setAttribute("text-anchor","middle");
 
     const sub=document.createElementNS(g.namespaceURI,"text");
-    sub.setAttribute("class","t-sub"); wrapText(sub,n.x+16,n.y+60,n.w-32,18,n.sub); g.appendChild(sub);
+    sub.setAttribute("class","t-sub"); wrapText(sub,n.x+18,n.y+66,n.w-36,18,n.sub); g.appendChild(sub);
 
     n.items.forEach((line,i)=>{
       const t=document.createElementNS(g.namespaceURI,"text");
-      t.setAttribute("class","t-item"); wrapText(t,n.x+16,n.y+112+i*20,n.w-32,18,line); g.appendChild(t);
+      t.setAttribute("class","t-item"); wrapText(t,n.x+18,n.y+110+i*22,n.w-36,18,line); g.appendChild(t);
     });
-
     gNodes.appendChild(g);
   }
 }
 render();
 
-/* ── 4) Drawer ─────────────────────────────────────────────── */
+/* ── 4) Drawer interactions ───────────────────────────────── */
+const dTitleEl=$("#dTitle"), dListEl=$("#dList");
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
-  dTitle.textContent=n.title; dList.innerHTML="";
-  [n.sub, ...n.items].slice(0,3).forEach(v=>{const li=document.createElement("li"); li.textContent=v.replace(/^•\s?/,''); dList.appendChild(li);});
+  dTitleEl.textContent=n.title; dListEl.innerHTML="";
+  [n.sub,...n.items].slice(0,3).forEach(v=>{const li=document.createElement("li"); li.textContent=v.replace(/^•\s?/,''); dListEl.appendChild(li);});
 }
-function clearCurrent(){ [...gNodes.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
+function clearCurrent(){[...gNodes.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current"));}
 gNodes.addEventListener("mouseover",e=>{const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id);});
 gNodes.addEventListener("mouseout",e=>{const g=e.target.closest(".node"); if(!g) return; g.removeAttribute("aria-current");});
 gNodes.addEventListener("click",e=>{const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);});
 gNodes.addEventListener("keydown",e=>{const g=e.target.closest(".node"); if(!g) return; if(e.key==="Enter"||e.key===" "){e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);}});
 
-/* ── 5) Mode toggle + simulation ───────────────────────────── */
+/* ── 5) Mode toggle + animation ───────────────────────────── */
 mode.addEventListener("change",()=>{
   model.mode = mode.checked ? "dmz" : "air";
   modeCaption.textContent = model.mode==="air" ? "Mode: Air‑gapped (manual signed packages)" : "Mode: DMZ relay (signed pull over mTLS)";
