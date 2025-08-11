@@ -9,7 +9,7 @@
      0) Veltrax Dark Tokens (no external libs)
      ───────────────────────────────────────────────────────── */
   :root{
-    --bg:#0d1117; --surface:#0f1520; --panel:#121a26;
+    --bg:#0d1117; --surface:#101624; --panel:#131a27;
     --text:#e6ecf3; --muted:#9aa7b6; --border:#223047;
     --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
   }
@@ -20,13 +20,7 @@
   a:focus-visible,button:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 
   /* ── 1) Header ─────────────────────────────────────────── */
-  header{
-    position:sticky;top:0;z-index:30;
-    background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);
-    border-bottom:1px solid var(--border);
-    display:flex;align-items:center;justify-content:flex-start;gap:10px;
-    padding:12px 14px;
-  }
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:12px 14px}
   .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .title{margin:0;font-size:15px;font-weight:600;letter-spacing:.3px}
 
@@ -53,13 +47,16 @@
   /* ── 4) Diagram styles ─────────────────────────────────── */
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
-  .node rect,.node path{fill:#0d1421;stroke:var(--border)}
-  .node text{fill:var(--text);font-size:13px}
-  .node .muted{fill:var(--muted);font-size:12px}
+  .node rect{fill:#0f1524;stroke:var(--border)}
+  .node text{fill:var(--text)}
+  .node .title{font-size:16px;font-weight:700}
+  .node .subtitle{font-size:13px;fill:var(--muted)}
+  .node .bullet{font-size:13px;fill:var(--muted)}
   .edge{stroke:#7b8497;stroke-width:2.4;fill:none}
   .edge.air{stroke-dasharray:7 5;stroke:#9aa6bb}
   .edge.dmz{stroke:var(--accent)}
-  .edgelabel{fill:var(--muted);font-size:12px}
+  .chip{fill:#0f1320;stroke:var(--border);stroke-width:1;rx:6;ry:6}
+  .chiptext{fill:#d9e1ee;font-size:12px}
 
   /* ── 5) Controls (bottom of canvas) ───────────────────── */
   .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
@@ -68,9 +65,9 @@
   .switch input:checked{background:#4a7dff}
   .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
   .switch input:checked::after{transform:translateX(18px)}
-  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;color:var(--text)}
   .btn:hover{border-color:var(--accent)}
-  .chip{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
+  .pill{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
 
   /* ── 6) Founders banner & Next teaser ─────────────────── */
   .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
@@ -85,8 +82,6 @@
     main{grid-template-columns:1fr}
     aside#drawer{display:none}
     .card h2{font-size:17px}
-    .node text{font-size:14px}
-    .edgelabel{font-size:13px}
     .controls{gap:12px}
   }
   @media (max-width: 560px){
@@ -155,7 +150,7 @@
               </span>
               <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
             </div>
-            <span class="chip" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
+            <span class="pill" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
           </div>
         </div>
 
@@ -209,19 +204,19 @@
 const model = {
   mode: "air",
   nodes: [
-    { id:"cloud", x:60,  y:90,  w:280, h:160,
+    { id:"cloud", x:60,  y:90,  w:300, h:160,
       title:"Cloud Sources", subtitle:"Vendor APIs • S3 • SaaS exports",
       bullets:{ Purpose:["Bring off‑site data safely"], Protocols:["HTTPS/mTLS • Signed bundles"], Security:["DMZ stages & verifies"] } },
-    { id:"local", x:60,  y:300, w:280, h:160,
+    { id:"local", x:60,  y:300, w:300, h:160,
       title:"Local Sources", subtitle:"Oracle • Postgres • SFTP • CSV",
       bullets:{ Purpose:["Read‑only sync from systems"], Protocols:["JDBC/ODBC • SFTP"], Security:["Least‑privilege access"] } },
-    { id:"dmz",   x:380, y:130, w:260, h:120,
+    { id:"dmz",   x:400, y:150, w:280, h:130,
       title:"DMZ Update Agent", subtitle:"Signed pull & staging",
       bullets:{ Purpose:["Pull → stage → verify"], Protocols:["mTLS • COSIGN/Sigstore"], Security:["No secrets at rest"] } },
-    { id:"core",  x:690, y:60,  w:390, h:280,
+    { id:"core",  x:720, y:80,  w:380, h:280,
       title:"Veltrax Core", subtitle:"Apps • Postgres • Local LLM",
       bullets:{ Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"], Protocols:["gRPC/HTTP • JWT/RBAC"], Security:["AES‑256 at rest • Audit logs"] } },
-    { id:"roi",   x:690, y:370, w:390, h:180,
+    { id:"roi",   x:720, y:380, w:380, h:180,
       title:"ROI & Audit", subtitle:"Proof of value & compliance",
       bullets:{ Purpose:["Live savings & revenue"], Protocols:["JSONL logs • CSV/PDF"], Security:["Immutable hashes"] } }
   ],
@@ -250,41 +245,46 @@ const dTitle=$("#dTitle"), dList=$("#dList");
    ───────────────────────────────────────────────────────── */
 function rrect(x,y,w,h,r=16){ return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`; }
 function center(n){ return {x:n.x+n.w/2, y:n.y+n.h/2}; }
-function curve(a,b){
-  const A=center(a), B=center(b), dx=B.x-A.x, dy=B.y-A.y;
+function curve(from,to){
+  const A=center(from), B=center(to); const dx=B.x-A.x, dy=B.y-A.y;
   const c1=`${A.x+dx*0.35},${A.y+dy*0.1}`, c2=`${A.x+dx*0.7},${A.y+dy*0.9}`;
   return `M${A.x},${A.y} C${c1} ${c2} ${B.x},${B.y}`;
 }
 
 /* ─────────────────────────────────────────────────────────
-   4) Render diagram
+   4) Render diagram (edges under nodes, readable chips)
    ───────────────────────────────────────────────────────── */
 function render(){
   gE.innerHTML=""; gN.innerHTML=""; gL.innerHTML="";
-  // edges first
+  // Edges first
   for(const e of model.edges){
     const from=model.nodes.find(n=>n.id===e.from), to=model.nodes.find(n=>n.id===e.to);
     const cfg=(model.mode==="dmz")?e.dmz:e.air;
     const p=document.createElementNS("http://www.w3.org/2000/svg","path");
     p.setAttribute("d",curve(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
     p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id; gE.appendChild(p);
-    const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    // Label chip
     const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.55);
-    t.setAttribute("x",pt.x); t.setAttribute("y",pt.y-8); t.setAttribute("text-anchor","middle"); t.setAttribute("class","edgelabel");
-    t.textContent=cfg.label; gL.appendChild(t);
+    const text=document.createElementNS("http://www.w3.org/2000/svg","text");
+    text.setAttribute("class","chiptext"); text.textContent=cfg.label;
+    // temp to measure
+    gL.appendChild(text); text.setAttribute("x", pt.x); text.setAttribute("y", pt.y);
+    const bb=text.getBBox();
+    const pad=6; const bg=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    bg.setAttribute("class","chip"); bg.setAttribute("x", bb.x-pad); bg.setAttribute("y", bb.y-10-pad);
+    bg.setAttribute("width", bb.width+pad*2); bg.setAttribute("height", bb.height+pad*2);
+    gL.insertBefore(bg, text); text.setAttribute("y", bb.y-2); text.setAttribute("text-anchor","middle"); text.setAttribute("x", bb.x+bb.width/2);
   }
-  // nodes
+  // Nodes
   for(const n of model.nodes){
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("class","node"); g.setAttribute("tabindex","0"); g.setAttribute("role","button"); g.setAttribute("aria-label",n.title); g.dataset.id=n.id;
     const shape=document.createElementNS("http://www.w3.org/2000/svg","path"); shape.setAttribute("d",rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
-    const t1=document.createElementNS("http://www.w3.org/2000/svg","text"); t1.setAttribute("x",n.x+n.w/2); t1.setAttribute("y",n.y+36); t1.setAttribute("text-anchor","middle"); t1.setAttribute("font-weight","700"); t1.textContent=n.title; g.appendChild(t1);
-    const t2=document.createElementNS("http://www.w3.org/2000/svg","text"); t2.setAttribute("x",n.x+n.w/2); t2.setAttribute("y",n.y+60); t2.setAttribute("text-anchor","middle"); t2.setAttribute("class","muted"); t2.textContent=n.subtitle; g.appendChild(t2);
-    if(n.id==="core"){
-      ["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"].forEach((line,i)=>{
-        const tx=document.createElementNS("http://www.w3.org/2000/svg","text"); tx.setAttribute("x",n.x+18); tx.setAttribute("y",n.y+94+i*22); tx.setAttribute("class","muted"); tx.textContent="• "+line; g.appendChild(tx);
-      });
-    }
+    const t1=document.createElementNS("http://www.w3.org/2000/svg","text"); t1.setAttribute("x",n.x+16); t1.setAttribute("y",n.y+32); t1.setAttribute("class","title"); t1.textContent=n.title; g.appendChild(t1);
+    const t2=document.createElementNS("http://www.w3.org/2000/svg","text"); t2.setAttribute("x",n.x+16); t2.setAttribute("y",n.y+52); t2.setAttribute("class","subtitle"); t2.textContent=n.subtitle; g.appendChild(t2);
+    if(n.id==="core"){ ["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"].forEach((line,i)=>{
+      const li=document.createElementNS("http://www.w3.org/2000/svg","text"); li.setAttribute("x",n.x+16); li.setAttribute("y",n.y+82+i*20); li.setAttribute("class","bullet"); li.textContent="• "+line; g.appendChild(li);
+    }); }
     gN.appendChild(g);
   }
 }
@@ -296,8 +296,11 @@ render();
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
   dTitle.textContent=n.title; dList.innerHTML="";
-  [["Purpose",n.bullets.Purpose?.[0]||""],["Protocols",n.bullets.Protocols?.[0]||""],["Security",n.bullets.Security?.[0]||""]]
-    .forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
+  [
+    ["Purpose", n.bullets.Purpose?.[0]||""],
+    ["Protocols", n.bullets.Protocols?.[0]||""],
+    ["Security", n.bullets.Security?.[0]||""]
+  ].forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
 }
 function clearCurrent(){ [...gN.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
 
