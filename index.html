@@ -3,58 +3,43 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veltrax Architecture — Local‑First Enterprise AI</title>
+<title>Veltrax — Local‑First Architecture</title>
 <style>
-  :root{
-    --bg:#0d1117; --surface:#0f1421; --panel:#121a2a; --text:#e6ecf3; --muted:#9aa7b6; --border:#223047; --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
-  }
+  :root{--bg:#0d1117;--surface:#0f1421;--panel:#121a2a;--text:#e6ecf3;--muted:#9aa7b6;--border:#223047;--accent:#6f42c1;--accent2:#7aa3ff}
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
   a{color:#9db7ff;text-decoration:none}
   a:hover{text-decoration:underline}
-  h1,h2,h3{line-height:1.2}
-  h2{margin:20px 0 10px}
-  p{margin:10px 0}
   .wrap{max-width:1100px;margin:0 auto;padding:18px}
   header{position:sticky;top:0;z-index:20;background:linear-gradient(to bottom,rgba(2,6,23,.7),rgba(2,6,23,.2)),var(--surface);border-bottom:1px solid var(--border)}
-  .nav{display:flex;align-items:center;gap:14px;padding:12px 18px}
+  .nav{display:flex;align-items:center;gap:12px;padding:12px 18px}
   .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .spacer{flex:1}
   .pill{border:1px solid var(--border);background:var(--panel);padding:6px 10px;border-radius:999px;color:var(--muted)}
-
-  .lead{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
+  h1,h2,h3{line-height:1.2;margin:0}
+  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}
   .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
   .muted{color:var(--muted)}
-  .toc{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
   .toc a{border:1px solid var(--border);padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.03)}
-
-  /* Diagram */
   .diagram{margin:18px 0;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
   svg{width:100%;height:100%}
+  /* Diagram visuals */
   .node rect{fill:#0f1524;stroke:var(--border)}
   .node text{fill:var(--text)}
   .titleText{font-weight:700;font-size:15px}
   .subText{fill:var(--muted);font-size:12.5px}
-  .bullet{fill:#9fb0c7;font-size:12.5px}
   .edge{stroke:#7b8497;stroke-width:2.6;fill:none}
   .edge.dmz{stroke:#6f42c1}
-  .edge.local{stroke:#8aa4ff}
+  .edge.local{stroke:#7aa3ff}
   .edge.out{stroke:#7b8497}
-  .chip{fill:#0f1320;stroke:var(--border);rx:6;ry:6}
-  .chiptext{fill:#d9e1ee;font-size:12px}
   .fwbar{fill:rgba(122,163,255,.12);stroke:#2b3650}
-
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .badge{display:inline-block;border:1px solid var(--border);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:7px;color:var(--muted);font-size:12px;margin-right:6px}
-
   ul{margin:8px 0 0 18px}
-  code{background:#0c1220;border:1px solid #1f2b44;padding:2px 5px;border-radius:6px}
-
   footer{color:var(--muted);border-top:1px solid var(--border);padding:18px;margin-top:24px}
-
-  @media (max-width: 920px){ .lead{grid-template-columns:1fr} .grid,.grid-3{grid-template-columns:1fr} }
+  @media (max-width: 920px){ .hero{grid-template-columns:1fr} .grid,.grid-3{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -63,84 +48,81 @@
     <div class="logo" aria-hidden="true"></div>
     <strong>Veltrax — Architecture</strong>
     <span class="spacer"></span>
-    <span class="pill">Local‑first • Private by default</span>
+    <span class="pill">Public overview • Local‑first</span>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="lead">
+  <section class="hero">
     <div class="card">
-      <h2>Overview</h2>
-      <p>Veltrax is a private, <strong>local‑first</strong> AI platform that runs on hardware you control. It ingests data from cloud vendors and on‑prem systems, stages it in a secured <strong>DMZ</strong>, and processes everything inside the <strong>Veltrax Core</strong> (Apps + Postgres + Local LLMs). Results and audit trails flow to employee workstations—without SaaS LLMs.</p>
+      <h1>Local‑First Enterprise AI</h1>
+      <p>Veltrax runs on hardware you control. Data from cloud sources and on‑prem systems is staged at the boundary and processed inside the <strong>Veltrax Core</strong> (Apps • Database • Local LLMs). Results reach employee workstations with built‑in ROI and audit visibility. <strong>No SaaS LLM by default.</strong></p>
       <div class="toc">
         <a href="#diagram">High‑level diagram</a>
         <a href="#components">Components</a>
         <a href="#flows">Data flows</a>
-        <a href="#security">Security model</a>
-        <a href="#deploy">Deployment</a>
-        <a href="#updates">Signed updates</a>
-        <a href="#observability">ROI & audit</a>
-        <a href="#sizing">Reference sizing</a>
+        <a href="#trust">Trust & posture</a>
       </div>
     </div>
     <div class="card">
-      <h2>Design goals</h2>
+      <h2>What to know (public)</h2>
       <ul>
-        <li><strong>Zero external LLMs by default</strong>. All inference local.</li>
-        <li><strong>Proven business impact</strong>. Every pipeline feeds ROI & audit.</li>
-        <li><strong>Defense‑in‑depth</strong>. DMZ boundary, signed updates, RBAC, immutable logs.</li>
+        <li>Conceptual, high‑level architecture (safe for GitHub).</li>
+        <li>Local‑first compute; customer‑controlled data.</li>
+        <li>ROI & Audit by design.</li>
       </ul>
-      <p class="muted">Works for banking (Finex), retail (ÉCHELON), and legal (Verdict).</p>
+      <p class="muted">Technical implementation details are shared under NDA during evaluations.</p>
     </div>
   </section>
 
-  <!-- High‑level Diagram -->
+  <!-- High‑level Diagram (conceptual, redacted) -->
   <section id="diagram" class="diagram card" aria-label="Veltrax high level diagram">
-    <svg viewBox="0 0 1200 620" role="img" aria-label="Cloud vendors and local data flow through DMZ to Veltrax Core and out to workstations">
+    <svg viewBox="0 0 1200 560" role="img" aria-label="Cloud sources and local data flow through a Boundary into the Veltrax Core, then to Workstations">
       <defs>
         <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="currentColor"/></marker>
       </defs>
-      <!-- Boxes -->
-      <g class="node"> <!-- Cloud vendors (stacked) -->
+      <!-- Cloud sources (stacked) -->
+      <g class="node">
         <rect x="70" y="110" width="240" height="70" rx="14"/>
-        <text x="90" y="135" class="titleText">Cloud Vendor</text>
-        <text x="90" y="155" class="subText">AWS • Azure • SaaS</text>
+        <text x="90" y="135" class="titleText">Cloud Source</text>
+        <text x="90" y="155" class="subText">Vendor / SaaS</text>
       </g>
       <g class="node">
         <rect x="70" y="200" width="240" height="70" rx="14"/>
-        <text x="90" y="225" class="titleText">Cloud Vendor</text>
-        <text x="90" y="245" class="subText">API • S3 • Exports</text>
+        <text x="90" y="225" class="titleText">Cloud Source</text>
+        <text x="90" y="245" class="subText">Export / API</text>
       </g>
       <g class="node">
         <rect x="70" y="290" width="240" height="70" rx="14"/>
-        <text x="90" y="315" class="titleText">Cloud Vendor</text>
-        <text x="90" y="335" class="subText">3rd‑party system</text>
+        <text x="90" y="315" class="titleText">Cloud Source</text>
+        <text x="90" y="335" class="subText">3rd‑party</text>
       </g>
 
-      <g class="node"> <!-- DMZ with firewall bars -->
+      <!-- Boundary (former DMZ) with soft bars -->
+      <g class="node">
         <rect x="360" y="190" width="180" height="110" rx="14"/>
         <rect class="fwbar" x="348" y="198" width="8" height="94" rx="2"/>
         <rect class="fwbar" x="542" y="198" width="8" height="94" rx="2"/>
-        <text x="380" y="215" class="titleText">DMZ</text>
-        <text x="380" y="235" class="subText">Secure relay & staging</text>
+        <text x="380" y="215" class="titleText">Boundary</text>
+        <text x="380" y="235" class="subText">Staged updates</text>
       </g>
 
-      <g class="node"> <!-- Local data -->
+      <!-- Local data (separate flow) -->
+      <g class="node">
         <rect x="260" y="420" width="240" height="80" rx="14"/>
-        <text x="280" y="445" class="titleText">Local Data</text>
-        <text x="280" y="465" class="subText">Proprietary • Read‑only</text>
+        <text x="280" y="445" class="titleText">Local Sensitive Data</text>
+        <text x="280" y="465" class="subText">Proprietary • Read‑only (conceptual)</text>
       </g>
 
-      <g class="node"> <!-- Veltrax Core -->
+      <!-- Core -->
+      <g class="node">
         <rect x="620" y="160" width="340" height="220" rx="14"/>
         <text x="640" y="185" class="titleText">Veltrax Core</text>
-        <text x="640" y="205" class="subText">Apps • Postgres • Local LLMs</text>
-        <text x="640" y="230" class="bullet">• Apps: Finex • ÉCHELON • Verdict</text>
-        <text x="640" y="250" class="bullet">• Postgres (local)</text>
-        <text x="640" y="270" class="bullet">• Local LLM Engine</text>
+        <text x="640" y="205" class="subText">Apps • Database • Local LLMs</text>
       </g>
 
-      <g class="node"> <!-- Workstations (fan‑out) -->
+      <!-- Workstations (fan‑out) -->
+      <g class="node">
         <rect x="990" y="150" width="180" height="80" rx="14"/>
         <text x="1010" y="175" class="titleText">Workstation</text>
         <text x="1010" y="195" class="subText">ROI</text>
@@ -156,7 +138,7 @@
         <text x="1010" y="395" class="subText">Executive</text>
       </g>
 
-      <!-- Edges (orthogonal, tidy) -->
+      <!-- Edges (clean orthogonal, unlabeled) -->
       <path class="edge dmz" d="M310,145 H348" marker-end="url(#arrow)"/>
       <path class="edge dmz" d="M310,235 H348" marker-end="url(#arrow)"/>
       <path class="edge dmz" d="M310,325 H348" marker-end="url(#arrow)"/>
@@ -165,147 +147,57 @@
       <path class="edge out" d="M960,190 H990" marker-end="url(#arrow)"/>
       <path class="edge out" d="M960,290 H990" marker-end="url(#arrow)"/>
       <path class="edge out" d="M960,390 H990" marker-end="url(#arrow)"/>
-      <path class="edge out" d="M790,380 V400" marker-end="url(#arrow)"/>
-
-      <!-- Source labels -->
-      <text x="420" y="180" class="chiptext">DMZ boundary</text>
     </svg>
   </section>
 
-  <!-- Components -->
+  <!-- Components (generic labels) -->
   <section id="components" class="grid">
     <div class="card">
       <h2>Veltrax Core</h2>
-      <p>Runs on customer hardware. Everything happens inside your network.</p>
       <ul>
-        <li><strong>Apps</strong>: Finex (banking), ÉCHELON (retail), Verdict (legal).</li>
-        <li><strong>Storage</strong>: Postgres with PITR, encryption at rest.</li>
-        <li><strong>Models</strong>: Local LLMs & task‑specific models, quantized for the target GPU/CPU.</li>
-        <li><strong>Auth</strong>: SSO/OIDC, JWT, and RBAC enforced at the service layer.</li>
+        <li>Self‑hosted <strong>Apps</strong> for each vertical.</li>
+        <li>Local <strong>Database</strong> for state & analytics.</li>
+        <li><strong>Local LLMs</strong> sized to your hardware.</li>
       </ul>
     </div>
     <div class="card">
-      <h2>DMZ</h2>
+      <h2>Boundary</h2>
       <ul>
-        <li>Pulls signed update/data bundles on a schedule (mTLS).</li>
-        <li>Verifies provenance (Sigstore/Cosign). No long‑lived secrets at rest.</li>
-        <li>Transfers across the boundary into the Core via approved jobs.</li>
+        <li>Isolates external data and updates before they enter the Core.</li>
+        <li>Operates on a schedule defined by the customer.</li>
+        <li>Can support fully air‑gapped operations.</li>
       </ul>
-      <p class="muted"><span class="badge">Air‑gapped</span><span class="badge">DMZ relay</span> Both modes supported.</p>
     </div>
   </section>
 
-  <!-- Flows -->
+  <!-- Flows (conceptual) -->
   <section id="flows" class="card" style="margin-top:14px">
     <h2>Data Flows</h2>
     <ol>
-      <li><strong>Cloud vendors → DMZ → Core</strong>: vendor exports are signed, staged in DMZ, then applied to the Core after verification.</li>
-      <li><strong>Local sensitive data → Core</strong>: read‑only connectors (JDBC/ODBC/SFTP) ingest operational data without exposing secrets externally.</li>
-      <li><strong>Core → Workstations</strong>: apps served on LAN; all actions are audit‑logged and summarized for ROI.</li>
+      <li><strong>Cloud sources → Boundary → Core</strong> for vendor or SaaS exports.</li>
+      <li><strong>Local sensitive data → Core</strong> via read‑only connectors.</li>
+      <li><strong>Core → Workstations</strong> for ROI, Audit, and Executive views.</li>
     </ol>
   </section>
 
-  <!-- Security -->
-  <section id="security" class="grid">
+  <!-- Trust posture (non‑technical) -->
+  <section id="trust" class="grid">
     <div class="card">
-      <h2>Security Model</h2>
+      <h2>Trust & Posture</h2>
       <ul>
-        <li>Defense‑in‑depth: DMZ boundary, network segmentation, least‑privilege service accounts.</li>
-        <li>mTLS everywhere; certificates rotated automatically.</li>
-        <li>Encryption: AES‑256 at rest, TLS in transit.</li>
-        <li>RBAC & signed release artifacts; optional quorum for updates.</li>
+        <li>Local‑first by default; customer‑controlled environment.</li>
+        <li>Defense‑in‑depth with a staged boundary.</li>
+        <li>Transparent value: ROI & audit visibility built‑in.</li>
       </ul>
     </div>
     <div class="card">
-      <h2>Compliance & Audit</h2>
+      <h2>Next Steps</h2>
       <ul>
-        <li>Immutable event logs with content hashes.</li>
-        <li>Deterministic pipelines; every prediction is explainable and traceable.</li>
-        <li>Export to CSV/PDF for auditors; JSONL for data teams.</li>
+        <li>Request a deeper technical brief (NDA).</li>
+        <li>Schedule a hardware sizing session.</li>
+        <li>See live vertical demos (Finex, ÉCHELON, Verdict).</li>
       </ul>
     </div>
-  </section>
-
-  <!-- Deployment -->
-  <section id="deploy" class="grid">
-    <div class="card">
-      <h2>Deployment Options</h2>
-      <ul>
-        <li><strong>Air‑gapped</strong>: media transfer of signed bundles; no direct network egress.</li>
-        <li><strong>DMZ relay</strong>: pull over mTLS on a fixed cadence; no inbound ports opened to Core.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h2>Network & Ports</h2>
-      <ul>
-        <li>DMZ → Core: pull jobs over mTLS (one‑way).</li>
-        <li>Workstations → Core: HTTPS (443) through the LAN with SSO.</li>
-        <li>Source systems → Core: JDBC/ODBC/SFTP as read‑only users.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Signed updates -->
-  <section id="updates" class="card" style="margin-top:14px">
-    <h2>Signed Updates</h2>
-    <ol>
-      <li>Build pipeline produces an SBOM + signed artifacts.</li>
-      <li>DMZ fetches the release manifest and verifies signatures.</li>
-      <li>Validated packages are staged and applied to Core with policy checks.</li>
-    </ol>
-    <p class="muted">All artifacts are attestable with provenance; rollbacks are deterministic.</p>
-  </section>
-
-  <!-- Observability / ROI -->
-  <section id="observability" class="grid">
-    <div class="card">
-      <h2>Observability</h2>
-      <ul>
-        <li>Structured event stream (JSONL) per service.</li>
-        <li>Resource metrics (CPU/GPU/mem/IO) with budgets per workload.</li>
-        <li>Trace replay for incident analysis.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h2>ROI & Audit</h2>
-      <ul>
-        <li>KPIs surfaced per department (savings, fraud prevented, time saved).</li>
-        <li>Every action mapped to a ledger entry with an owner and timestamp.</li>
-        <li>Exports for Finance & Compliance (CSV/PDF).</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Sizing -->
-  <section id="sizing" class="card" style="margin-top:14px">
-    <h2>Reference Sizing</h2>
-    <div class="grid-3">
-      <div class="card">
-        <h3>Starter</h3>
-        <ul>
-          <li>1× workstation‑class GPU (e.g., 24–48GB VRAM)</li>
-          <li>128GB RAM • NVMe 2TB</li>
-          <li>100–200 concurrent users</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Standard</h3>
-        <ul>
-          <li>2–4× GPUs (80GB VRAM class)</li>
-          <li>256–512GB RAM • NVMe 8TB</li>
-          <li>500–2k concurrent users</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Enterprise</h3>
-        <ul>
-          <li>8× GPUs (H100/A100 class) + CPU inference tier</li>
-          <li>1–2TB RAM • NVMe 16TB+</li>
-          <li>Multi‑site HA + DR</li>
-        </ul>
-      </div>
-    </div>
-    <p class="muted">Next: <a href="#">Local LLM Deployment Simulator</a> to size exact models to your hardware.</p>
   </section>
 </main>
 
