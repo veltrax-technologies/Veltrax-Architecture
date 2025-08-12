@@ -180,7 +180,15 @@ const GRID = { col:[80, 420, 780, 1080], row:[140, 360, 520] };
 const model = {
   mode: 'air',
   nodes: [
-    { id:'cloud', x:GRID.col[0],
+    { id:'cloud', x:GRID.col[0], y:GRID.row[0]-70, w:300, h:130, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
+    { id:'local', x:GRID.col[0], y:GRID.row[1]-40, w:300, h:110, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Direct read‑only sync'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege access']} },
+    { id:'dmz',   x:GRID.col[1], y:GRID.row[0]-50, w:260, h:120, title:'DMZ', subtitle:'Secure relay — signed pull & staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Cosign/Sigstore'],Security:['No secrets at rest']} },
+    { id:'core',  x:GRID.col[2], y:GRID.row[0]-90, w:380, h:260, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLMs', bullets:{Purpose:['Run Finex/Échelon/Verdict','Score, route, explain'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit logs']} },
+    { id:'roi',   x:GRID.col[2], y:GRID.row[2]-80, w:380, h:160, title:'ROI & Audit', subtitle:'Proof of value & compliance', bullets:{Purpose:['Live savings & revenue'],Protocols:['JSONL • CSV/PDF'],Security:['Immutable hashes']} },
+    { id:'workROI',  x:GRID.col[3]-220, y:GRID.row[0]-90, w:220, h:100, title:'Workstation — ROI', subtitle:'Analyst dashboards', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} },
+    { id:'workAudit',x:GRID.col[3]-220, y:GRID.row[1]-90, w:220, h:100, title:'Workstation — Audit', subtitle:'Compliance review', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} },
+    { id:'workExec', x:GRID.col[3]-220, y:GRID.row[2]-110, w:220, h:100, title:'Workstation — Executive', subtitle:'C‑suite insights', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} }
+  ],
   edges: [
     { id:'e1', from:'cloud', to:'dmz',   air:{cls:'dmz',   label:'Air‑gap stage offline'}, dmz:{cls:'dmz',   label:'Signed pull'} },
     { id:'e2', from:'dmz',   to:'core',  air:{cls:'dmz',   label:'Manual carry‑in'},      dmz:{cls:'dmz',   label:'Verified package'} },
