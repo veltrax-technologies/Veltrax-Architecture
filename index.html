@@ -51,9 +51,9 @@
   .edge.local{stroke:#8aa4ff}
   .edge.out{stroke:#7b8497}
   .chip{fill:#0f1320;stroke:var(--border);stroke-width:1;rx:6;ry:6}
-  .chiptext{fill:#d9e1ee;font-size:12px}
-
-  .controls{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+  $1
+  .fw{stroke:#ff6b6b;stroke-width:2.5;fill:none;opacity:.9}
+.controls{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
   .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
   .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
   .switch input:checked{background:#4a7dff}
@@ -180,7 +180,15 @@ const GRID = { col:[80, 420, 780, 1080], row:[140, 360, 520] };
 const model = {
   mode: 'air',
   nodes: [
-    { id:'cloud', x:GRID.col[0], y:GRID.row[0]-50, w:280, h:120, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
+    { id:'cloud', x:GRID.col[0], y:GRID.row[0]-70, w:300, h:130, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
+    { id:'local', x:GRID.col[0], y:GRID.row[1]-40, w:300, h:110, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Direct read‑only sync'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege access']} },
+    { id:'dmz',   x:GRID.col[1], y:GRID.row[0]-50, w:260, h:120, title:'DMZ', subtitle:'Secure relay — signed pull & staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Cosign/Sigstore'],Security:['No secrets at rest']} },
+    { id:'core',  x:GRID.col[2], y:GRID.row[0]-90, w:380, h:260, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLMs', bullets:{Purpose:['Run Finex/Échelon/Verdict','Score, route, explain'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit logs']} },
+    { id:'roi',   x:GRID.col[2], y:GRID.row[2]-80, w:380, h:160, title:'ROI & Audit', subtitle:'Proof of value & compliance', bullets:{Purpose:['Live savings & revenue'],Protocols:['JSONL • CSV/PDF'],Security:['Immutable hashes']} },
+    { id:'workROI',  x:GRID.col[3]-220, y:GRID.row[0]-90, w:220, h:100, title:'Workstation — ROI', subtitle:'Analyst dashboards', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} },
+    { id:'workAudit',x:GRID.col[3]-220, y:GRID.row[1]-90, w:220, h:100, title:'Workstation — Audit', subtitle:'Compliance review', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} },
+    { id:'workExec', x:GRID.col[3]-220, y:GRID.row[2]-110, w:220, h:100, title:'Workstation — Executive', subtitle:'C‑suite insights', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} }
+  ], y:GRID.row[0]-50, w:280, h:120, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
     { id:'local', x:GRID.col[0], y:GRID.row[1]-60, w:280, h:120, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Read‑only sync from systems'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege access']} },
     { id:'dmz',   x:GRID.col[1], y:GRID.row[0]-40, w:260, h:110, title:'DMZ', subtitle:'Signed pull & staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Cosign/Sigstore'],Security:['No secrets at rest']} },
     { id:'core',  x:GRID.col[2], y:GRID.row[0]-80, w:380, h:240, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLM', bullets:{Purpose:['Run Finex/Échelon/Verdict','Score, route, explain'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit logs']} },
@@ -192,7 +200,9 @@ const model = {
     { id:'e2', from:'dmz',   to:'core',  air:{cls:'dmz',   label:'Manual carry‑in'},      dmz:{cls:'dmz',   label:'Verified package'} },
     { id:'e3', from:'local', to:'core',  air:{cls:'local', label:'Direct read‑only'},     dmz:{cls:'local', label:'Direct read‑only'} },
     { id:'e4', from:'core',  to:'roi',   air:{cls:'out',   label:'Local logs'},           dmz:{cls:'out',   label:'Local logs'} },
-    { id:'e5', from:'core',  to:'work',  air:{cls:'out',   label:'Apps on LAN'},          dmz:{cls:'out',   label:'Apps on LAN'} }
+    { id:'e5a', from:'core', to:'workROI',   air:{cls:'out',   label:'ROI dashboards'},     dmz:{cls:'out',   label:'ROI dashboards'} },
+    { id:'e5b', from:'core', to:'workAudit', air:{cls:'out',   label:'Audit & compliance'}, dmz:{cls:'out',   label:'Audit & compliance'} },
+    { id:'e5c', from:'core', to:'workExec',  air:{cls:'out',   label:'Executive view'},     dmz:{cls:'out',   label:'Executive view'} }
   ]
 };
 
@@ -203,9 +213,16 @@ const dTitle=$('#dTitle'), dList=$('#dList');
 
 function rrect(x,y,w,h,r=16){ return `M${x+r},${y}h${w-2*r}a${r},${r}0 0 1 ${r},${r}v${h-2*r}a${r},${r} 0 0 1 -${r},${r}h-${w-2*r}a${r},${r}0 0 1 -${r},-${r}v-${h-2*r}a${r},${r}0 0 1 ${r},-${r}z`; }
 function center(n){ return {x:n.x+n.w/2,y:n.y+n.h/2}; }
-function orth(from,to){ // neat elbow: H to midX, V to target Y, H to target X
-  const x1=from.x+from.w, y1=center(from).y; const x2=to.x, y2=center(to).y;
-  const mid = (x1 + x2) / 2; return `M${x1},${y1} H${mid} V${y2} H${x2}`;
+$1
+function fwPath(x,y,h,w=10,step=14){
+  let d=`M${x},${y}`; for(let s=0;s<h;s+=step){ d+=` l${w},${step/2} l-${w},${step/2}`; } return d;
+}
+function drawFirewalls(){
+  const dmz = model.nodes.find(n=>n.id==='dmz'); if(!dmz) return;
+  const left=document.createElementNS('http://www.w3.org/2000/svg','path');
+  left.setAttribute('class','fw'); left.setAttribute('d', fwPath(dmz.x-12, dmz.y+10, dmz.h-20)); gL.appendChild(left);
+  const right=document.createElementNS('http://www.w3.org/2000/svg','path');
+  right.setAttribute('class','fw'); right.setAttribute('d', fwPath(dmz.x+dmz.w+12, dmz.y+10, dmz.h-20)); gL.appendChild(right);
 }
 
 function render(){
@@ -237,7 +254,8 @@ function render(){
         .forEach((line,i)=>{ const li=document.createElementNS('http://www.w3.org/2000/svg','text'); li.setAttribute('x',n.x+16); li.setAttribute('y',n.y+82+i*20); li.setAttribute('class','bullet'); li.textContent='• '+line; g.appendChild(li); });
     }
     gN.appendChild(g);
-  }
+    }
+  drawFirewalls();
 }
 render();
 
