@@ -37,7 +37,7 @@
   .canvas{position:relative;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-height:560px}
   svg{width:100%;height:100%}
 
-  /* Details moved below diagram */
+  /* Details below diagram */
   #details{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
   #details .drawer-title{font-weight:700;font-size:14px;margin-bottom:8px}
   #details .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
@@ -45,42 +45,39 @@
   #details .drawer-card ul{margin:0 0 0 18px;padding:0}
   #details .drawer-card li{margin:4px 0;color:var(--muted)}
 
+  /* Diagram styling */
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 12px rgba(111,66,193,.45))}
-  .node rect{fill:#0f1524;stroke:var(--border)}
+  .node rect,.node path{fill:#0f1524;stroke:var(--border)}
   [data-theme="light"] .node rect{fill:#f3f6ff}
   .node text{fill:var(--text)}
-  .node .title{font-size:16px;font-weight:700}
-  .node .subtitle{font-size:13px;fill:var(--muted)}
-  .node .bullet{font-size:13px;fill:var(--muted)}
-  .edge{stroke:#7b8497;stroke-width:2.4;fill:none}
-  .edge.air{stroke-dasharray:7 5;stroke:#9aa6bb}
+  .edge{stroke:#7b8497;stroke-width:2.6;fill:none}
   .edge.dmz{stroke:var(--accent)}
+  .edge.local{stroke:#8aa4ff}
+  .edge.out{stroke:#7b8497}
   .chip{fill:#0f1320;stroke:var(--border);stroke-width:1;rx:6;ry:6}
   .chiptext{fill:#d9e1ee;font-size:12px}
 
-  .controls{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+  /* Controls (bottom-left of canvas) */
+  .controls{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
   .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
   .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
   .switch input:checked{background:#4a7dff}
   .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
   .switch input:checked::after{transform:translateX(18px)}
   .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;color:var(--text)}
-  .btn:hover{border-color:var(--accent)}
   .pill{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
-  .btnrow{display:flex;gap:8px;flex-wrap:wrap}
 
   .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
-  .founders strong{font-size:16px}
   .teaser{margin:14px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  .teaser .btn{font-weight:600}
-
   footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
-  @media (max-width: 980px){ .grid-two{grid-template-columns:1fr} .controls{gap:12px} }
-  @media (max-width: 560px){ body{font-size:16px} .canvas{min-height:520px} .controls{flex-direction:column;align-items:flex-start} }
+
+  @media (max-width: 980px){ .grid-two{grid-template-columns:1fr} }
+  @media (max-width: 560px){ body{font-size:16px} .canvas{min-height:520px} }
 </style>
 </head>
 <body>
+  <!-- Header -->
   <header aria-label="Top bar">
     <span class="logo" aria-hidden="true"></span>
     <h1 class="title">Veltrax — Local‑First Platform</h1>
@@ -97,6 +94,7 @@
   </header>
 
   <div class="container">
+    <!-- Intro -->
     <section class="grid-two" aria-label="Intro">
       <div class="card">
         <h2>What is Veltrax?</h2>
@@ -119,6 +117,7 @@
       </div>
     </section>
 
+    <!-- Diagram -->
     <section aria-label="Architecture">
       <main>
         <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
@@ -131,27 +130,20 @@
             <g id="nodes"></g>
             <g id="labels"></g>
           </svg>
-
+          <!-- Controls, minus the bottom buttons -->
           <div class="controls" aria-label="Controls">
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <span class="switch" role="group" aria-label="Update mode">
-                <span aria-hidden="true">Air‑gapped</span>
-                <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
-                <span aria-hidden="true">DMZ relay</span>
-              </span>
-              <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
-              <span class="pill" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
-            </div>
-            <div class="btnrow" role="group" aria-label="Quick links">
-              <a class="btn" href="#" id="openFinex">Open Finex Demo</a>
-              <a class="btn" href="#" id="openSecurity">Security Model</a>
-              <a class="btn" href="#" id="openRoi">ROI Explorer</a>
-            </div>
+            <span class="switch" role="group" aria-label="Update mode">
+              <span aria-hidden="true">Air‑gapped</span>
+              <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
+              <span aria-hidden="true">DMZ relay</span>
+            </span>
+            <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
+            <span class="pill" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
           </div>
         </div>
       </main>
 
-      <!-- Details moved below diagram -->
+      <!-- Details below diagram -->
       <section id="details" aria-label="Details" class="card">
         <div class="drawer-title">Details</div>
         <div class="drawer-card">
@@ -169,18 +161,20 @@
       </section>
     </section>
 
+    <!-- Explainer -->
     <section class="card" aria-label="How data flows">
       <h2>How your data moves</h2>
       <ul class="bullets">
         <li><strong>Cloud vendors</strong> flow into a secured <em>DMZ Update Agent</em> that pulls signed packages on schedule.</li>
-        <li><strong>Local sensitive data</strong> (Oracle, Postgres, CSV, SFTP) feeds the <strong>Veltrax Core</strong> with read‑only connectors.</li>
+        <li><strong>Local sensitive data</strong> feeds the <strong>Veltrax Core</strong> with read‑only connectors.</li>
         <li>Inside the Core we run <strong>Apps + Postgres + Local LLM</strong>. Results stream to <strong>ROI & Audit</strong> and out to <strong>Employee Workstations</strong>.</li>
       </ul>
     </section>
 
+    <!-- Next + Founders -->
     <div class="teaser" role="region" aria-label="Next step">
       <div><strong>Next:</strong> Local LLM Deployment Simulator — size models to your hardware.</div>
-      <a class="btn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
+      <a class="topbtn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
     </div>
 
     <div class="founders" role="note" aria-label="Founders Program">
@@ -193,107 +187,112 @@
   </div>
 
 <script>
+// ─────────────────────────────────────────────
+// Left→right diagram with live pulses; Air‑gapped vs DMZ caption
+// ─────────────────────────────────────────────
 const model = {
-  mode: "air",
+  mode: 'air',
   nodes: [
-    { id:"cloud", x:60,  y:120, w:280, h:110, title:"Cloud Vendors", subtitle:"AWS • Azure • GCP • SaaS",
-      bullets:{ Purpose:["Bring off‑site data safely"], Protocols:["HTTPS/mTLS • Signed bundles"], Security:["DMZ stages & verifies"] } },
-    { id:"local", x:60,  y:260, w:280, h:130, title:"Local Sources", subtitle:"Oracle • Postgres • SFTP • CSV",
-      bullets:{ Purpose:["Read‑only sync from systems"], Protocols:["JDBC/ODBC • SFTP"], Security:["Least‑privilege access"] } },
-    { id:"dmz",   x:380, y:180, w:260, h:100, title:"DMZ Update Agent", subtitle:"Signed pull & staging",
-      bullets:{ Purpose:["Pull → stage → verify"], Protocols:["mTLS • Cosign/Sigstore"], Security:["No secrets at rest"] } },
-    { id:"core",  x:680, y:120, w:380, h:220, title:"Veltrax Core", subtitle:"Apps • Postgres • Local LLM",
-      bullets:{ Purpose:["Run Finex/Échelon/Verdict","Score, route, explain"], Protocols:["gRPC/HTTP • JWT/RBAC"], Security:["AES‑256 at rest • Audit logs"] } },
-    { id:"roi",   x:680, y:360, w:380, h:140, title:"ROI & Audit", subtitle:"Proof of value & compliance",
-      bullets:{ Purpose:["Live savings & revenue"], Protocols:["JSONL • CSV/PDF"], Security:["Immutable hashes"] } },
-    { id:"work",  x:1080-220, y:260, w:220, h:110, title:"Employee Workstations", subtitle:"Analysts • Operators",
-      bullets:{ Purpose:["Use apps with local data"], Protocols:["HTTPS • SSO"], Security:["RBAC • Least privilege"] } },
+    { id:'cloud', x:60,  y:110, w:280, h:110, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS' },
+    { id:'local', x:60,  y:270, w:280, h:120, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only' },
+    { id:'dmz',   x:380, y:140, w:260, h:100, title:'DMZ Update Agent', subtitle:'Signed pull & staging' },
+    { id:'core',  x:690, y:90,  w:380, h:220, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLM' },
+    { id:'roi',   x:690, y:340, w:380, h:150, title:'ROI & Audit', subtitle:'Proof of value & compliance' },
+    { id:'work',  x:1090-220, y:210, w:220, h:110, title:'Employee Workstations', subtitle:'Apps served on LAN' }
   ],
   edges: [
-    { id:"e1", from:"cloud", to:"dmz", air:{label:"Air‑gap active (stage offline)", cls:"air"}, dmz:{label:"Signed pull over mTLS", cls:"dmz"} },
-    { id:"e2", from:"dmz", to:"core",   air:{label:"Manual carry‑in after verify", cls:"air"}, dmz:{label:"Verified package → apply", cls:"dmz"} },
-    { id:"e3", from:"local", to:"core",  air:{label:"Direct read‑only sync", cls:"dmz"}, dmz:{label:"Direct read‑only sync", cls:"dmz"} },
-    { id:"e4", from:"core", to:"roi",    air:{label:"Local logs → ROI/Audit", cls:"dmz"}, dmz:{label:"Local logs → ROI/Audit", cls:"dmz"} },
-    { id:"e5", from:"core", to:"work",   air:{label:"Apps served on LAN", cls:"dmz"}, dmz:{label:"Apps served on LAN", cls:"dmz"} },
+    { id:'e1', from:'cloud', to:'dmz',   air:{cls:'dmz',   label:'Air‑gap stage offline'}, dmz:{cls:'dmz',   label:'Signed pull'} },
+    { id:'e2', from:'dmz',   to:'core',  air:{cls:'dmz',   label:'Manual carry‑in'},   dmz:{cls:'dmz',   label:'Verified package'} },
+    { id:'e3', from:'local', to:'core',  air:{cls:'local', label:'Direct read‑only'},  dmz:{cls:'local', label:'Direct read‑only'} },
+    { id:'e4', from:'core',  to:'roi',   air:{cls:'out',   label:'Local logs'},       dmz:{cls:'out',   label:'Local logs'} },
+    { id:'e5', from:'core',  to:'work',  air:{cls:'out',   label:'Apps on LAN'},      dmz:{cls:'out',   label:'Apps on LAN'} }
   ]
 };
 
-const $ = (q, el=document)=>el.querySelector(q);
-const arch=$("#arch"), gE=$("#edges"), gN=$("#nodes"), gL=$("#labels");
-const mode=$("#mode"), caption=$("#modeCaption");
-const dTitle=$("#dTitle"), dList=$("#dList");
+const $=(q,el=document)=>el.querySelector(q);
+const arch=$('#arch'), gE=$('#edges'), gN=$('#nodes'), gL=$('#labels');
+const mode=$('#mode'), caption=$('#modeCaption');
+const dTitle=$('#dTitle'), dList=$('#dList');
 
-function rrect(x,y,w,h,r=16){ return `M${x+r},${y} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-2*r} a${r},${r} 0 0 1 -${r},${r} h-${w-2*r} a${r},${r} 0 0 1 -${r},-${r} v-${h-2*r} a${r},${r} 0 0 1 ${r},-${r} z`; }
-function edgeLine(from,to){ const x1=from.x+from.w, y1=from.y+from.h/2; const x2=to.x, y2=to.y+to.h/2; return `M${x1},${y1} L${x2},${y2}`; }
+function rrect(x,y,w,h,r=14){ return `M${x+r},${y}h${w-2*r}a${r},${r}0 0 1 ${r},${r}v${h-2*r}a${r},${r}0 0 1 -${r},${r}h-${w-2*r}a${r},${r}0 0 1 -${r},-${r}v-${h-2*r}a${r},${r}0 0 1 ${r},-${r}z`; }
+function line(from,to){ const x1=from.x+from.w, y1=from.y+from.h/2; const x2=to.x, y2=to.y+to.h/2; return `M${x1},${y1} L${x2},${y2}`; }
 
 function render(){
-  gE.innerHTML=""; gN.innerHTML=""; gL.innerHTML="";
+  gE.innerHTML=gN.innerHTML=gL.innerHTML='';
   for(const e of model.edges){
-    const from=model.nodes.find(n=>n.id===e.from), to=model.nodes.find(n=>n.id===e.to);
-    const cfg=(model.mode==="dmz")?e.dmz:e.air;
-    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    p.setAttribute("d",edgeLine(from,to)); p.setAttribute("class",`edge ${cfg.cls}`);
-    p.setAttribute("stroke","currentColor"); p.setAttribute("marker-end","url(#arrow)"); p.dataset.id=e.id; gE.appendChild(p);
-    const len=p.getTotalLength(); const mid=len*0.5; const pt=p.getPointAtLength(mid);
-    const text=document.createElementNS("http://www.w3.org/2000/svg","text"); text.setAttribute("class","chiptext"); text.textContent=cfg.label; gL.appendChild(text); text.setAttribute("x", pt.x); text.setAttribute("y", pt.y);
-    const bb=text.getBBox(); const pad=6; const bg=document.createElementNS("http://www.w3.org/2000/svg","rect");
-    bg.setAttribute("class","chip"); bg.setAttribute("x", bb.x-pad); bg.setAttribute("y", bb.y-10-pad);
-    bg.setAttribute("width", bb.width+pad*2); bg.setAttribute("height", bb.height+pad*2);
-    gL.insertBefore(bg, text); text.setAttribute("y", bb.y-2); text.setAttribute("text-anchor","middle"); text.setAttribute("x", bb.x+bb.width/2);
+    const a=model.nodes.find(n=>n.id===e.from), b=model.nodes.find(n=>n.id===e.to);
+    const cfg=(model.mode==='dmz')?e.dmz:e.air;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', line(a,b)); p.setAttribute('class', `edge ${cfg.cls}`);
+    p.setAttribute('stroke','currentColor'); p.setAttribute('marker-end','url(#arrow)'); p.dataset.id=e.id; gE.appendChild(p);
+    const L=p.getTotalLength()*0.5, pt=p.getPointAtLength(L);
+    const chip=document.createElementNS('http://www.w3.org/2000/svg','text'); chip.setAttribute('class','chiptext'); chip.textContent=cfg.label; gL.appendChild(chip);
+    chip.setAttribute('x',pt.x); chip.setAttribute('y',pt.y);
+    const bb=chip.getBBox(); const pad=6; const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bg.setAttribute('class','chip'); bg.setAttribute('x',bb.x-pad); bg.setAttribute('y',bb.y-10-pad);
+    bg.setAttribute('width',bb.width+pad*2); bg.setAttribute('height',bb.height+pad*2);
+    gL.insertBefore(bg, chip); chip.setAttribute('y',bb.y-2); chip.setAttribute('text-anchor','middle'); chip.setAttribute('x', bb.x+bb.width/2);
   }
   for(const n of model.nodes){
-    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
-    g.setAttribute("class","node"); g.setAttribute("tabindex","0"); g.setAttribute("role","button"); g.setAttribute("aria-label",n.title); g.dataset.id=n.id;
-    const shape=document.createElementNS("http://www.w3.org/2000/svg","path"); shape.setAttribute("d",rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
-    const t1=document.createElementNS("http://www.w3.org/2000/svg","text"); t1.setAttribute("x",n.x+16); t1.setAttribute("y",n.y+32); t1.setAttribute("class","title"); t1.textContent=n.title; g.appendChild(t1);
-    const t2=document.createElementNS("http://www.w3.org/2000/svg","text"); t2.setAttribute("x",n.x+16); t2.setAttribute("y",n.y+52); t2.setAttribute("class","subtitle"); t2.textContent=n.subtitle; g.appendChild(t2);
-    if(n.id==="core"){ ["Apps: Finex • Échelon • Verdict","Postgres (local)","Local LLM Engine"].forEach((line,i)=>{
-      const li=document.createElementNS("http://www.w3.org/2000/svg","text"); li.setAttribute("x",n.x+16); li.setAttribute("y",n.y+82+i*20); li.setAttribute("class","bullet"); li.textContent="• "+line; g.appendChild(li);
-    }); }
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','node'); g.setAttribute('tabindex','0'); g.setAttribute('role','button'); g.setAttribute('aria-label', n.title); g.dataset.id=n.id;
+    const shape=document.createElementNS('http://www.w3.org/2000/svg','path'); shape.setAttribute('d', rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
+    const t1=document.createElementNS('http://www.w3.org/2000/svg','text'); t1.setAttribute('x',n.x+16); t1.setAttribute('y',n.y+32); t1.textContent=n.title; g.appendChild(t1);
+    const t2=document.createElementNS('http://www.w3.org/2000/svg','text'); t2.setAttribute('x',n.x+16); t2.setAttribute('y',n.y+52); t2.textContent=n.subtitle; g.appendChild(t2);
+    if(n.id==='core'){
+      ['Apps: Finex • Échelon • Verdict','Postgres (local)','Local LLM Engine'].forEach((line,i)=>{
+        const li=document.createElementNS('http://www.w3.org/2000/svg','text'); li.setAttribute('x',n.x+16); li.setAttribute('y',n.y+82+i*20); li.textContent='• '+line; li.setAttribute('fill','#9aa7b6'); g.appendChild(li);
+      });
+    }
     gN.appendChild(g);
   }
 }
 render();
 
+// Drawer details
 function showDetails(id){
   const n=model.nodes.find(x=>x.id===id); if(!n) return;
-  dTitle.textContent=n.title; dList.innerHTML="";
-  [["Purpose", n.bullets.Purpose?.[0]||""],["Protocols", n.bullets.Protocols?.[0]||""],["Security", n.bullets.Security?.[0]||""]]
-    .forEach(([k,v])=>{ const li=document.createElement("li"); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
+  dTitle.textContent=n.title; dList.innerHTML='';
+  [['Purpose','Connected flow to '+n.title],['Protocols','mTLS/JDBC/HTTPS'],['Security','Least‑privilege, signed updates']]
+    .forEach(([k,v])=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
 }
-function clearCurrent(){ [...gN.querySelectorAll(".node")].forEach(n=>n.removeAttribute("aria-current")); }
+function clearCurrent(){ [...gN.querySelectorAll('.node')].forEach(n=>n.removeAttribute('aria-current')); }
 
-gN.addEventListener("mouseover",e=>{ const g=e.target.closest(".node"); if(!g) return; g.setAttribute("aria-current","true"); showDetails(g.dataset.id); });
-gN.addEventListener("mouseout",e=>{ const g=e.target.closest(".node"); if(!g) return; g.removeAttribute("aria-current"); });
-gN.addEventListener("click",e=>{ const g=e.target.closest(".node"); if(!g) return; clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id); });
-gN.addEventListener("keydown",e=>{ const g=e.target.closest(".node"); if(!g) return; if(e.key==="Enter"||e.key===" "){ e.preventDefault(); clearCurrent(); g.setAttribute("aria-current","true"); showDetails(g.dataset.id);} });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") clearCurrent(); });
+gN.addEventListener('mouseover',e=>{ const g=e.target.closest('.node'); if(!g) return; g.setAttribute('aria-current','true'); showDetails(g.dataset.id); });
+gN.addEventListener('mouseout',e=>{ const g=e.target.closest('.node'); if(!g) return; g.removeAttribute('aria-current'); });
+gN.addEventListener('click',e=>{ const g=e.target.closest('.node'); if(!g) return; clearCurrent(); g.setAttribute('aria-current','true'); showDetails(g.dataset.id); });
+gN.addEventListener('keydown',e=>{ const g=e.target.closest('.node'); if(!g) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); clearCurrent(); g.setAttribute('aria-current','true'); showDetails(g.dataset.id);} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') clearCurrent(); });
 
-mode.addEventListener("change",()=>{
-  model.mode = mode.checked ? "dmz" : "air";
-  caption.textContent = model.mode==="air" ? "Mode: Air‑gapped (manual signed packages)" : "Mode: DMZ relay (signed pull over mTLS)";
+// Mode toggle affects edge captions (visual only)
+mode.addEventListener('change',()=>{
+  model.mode = mode.checked ? 'dmz' : 'air';
+  caption.textContent = model.mode==='air' ? 'Mode: Air‑gapped (manual signed packages)' : 'Mode: DMZ relay (signed pull over mTLS)';
   render();
 });
 
-$("#simulate").addEventListener("click",()=>{
-  const paths=[...$("#edges").querySelectorAll("path")].filter(p=>{ const id=p.dataset.id; return id!=="e2" ? true : model.mode==="dmz"; });
-  paths.forEach(p=>pulse(p, 1000 + Math.random()*800));
-});
-function pulse(edgePath, ms){
-  const dot=document.createElementNS("http://www.w3.org/2000/svg","circle"); dot.setAttribute("r","5"); dot.setAttribute("fill","url(#pulse)"); arch.appendChild(dot);
-  const len=edgePath.getTotalLength(), t0=performance.now();
-  (function step(t){ const k=Math.min(1,(t-t0)/ms), pt=edgePath.getPointAtLength(k*len); dot.setAttribute("cx",pt.x); dot.setAttribute("cy",pt.y); if(k<1) requestAnimationFrame(step); else arch.removeChild(dot); })(t0);
+// Alive animation
+function spawnPulse(edgePath, ms){
+  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('r','4.5'); dot.setAttribute('fill','url(#pulse)'); arch.appendChild(dot);
+  const len=edgePath.getTotalLength(); const start=performance.now();
+  (function step(t){ const k=Math.min(1,(t-start)/ms); const pt=edgePath.getPointAtLength(k*len); dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); if(k<1) requestAnimationFrame(step); else arch.removeChild(dot); })(start);
 }
+function loopPulses(){ const paths=[...document.querySelectorAll('#edges path')]; paths.forEach((p,i)=> setTimeout(()=> spawnPulse(p, 1400+Math.random()*800), i*220)); }
+loopPulses(); const pulseTimer=setInterval(loopPulses, 2800);
 
+// Simulate button to inject immediate pulses
+$('#simulate').addEventListener('click',()=> loopPulses());
+
+// Theme + products menu
 const themeBtn=document.querySelector('#theme'); const root=document.documentElement;
 themeBtn.addEventListener('click',()=>{ const isLight=root.getAttribute('data-theme')==='light'; root.setAttribute('data-theme', isLight? 'dark' : 'light'); themeBtn.setAttribute('aria-pressed', String(!isLight)); });
-
 const productsBtn=document.querySelector('#productsBtn'); const productsMenu=document.querySelector('#productsMenu');
 productsBtn.addEventListener('click',()=>{ const open = productsMenu.getAttribute('data-open')==='true'; productsMenu.setAttribute('data-open', String(!open)); productsBtn.setAttribute('aria-expanded', String(!open)); });
 document.addEventListener('click',(e)=>{ if(!productsMenu.contains(e.target) && e.target!==productsBtn){ productsMenu.setAttribute('data-open','false'); productsBtn.setAttribute('aria-expanded','false'); }});
-productsMenu.addEventListener('click',(e)=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); const act=a.dataset.action||''; if(act==='open-finex') alert('Open Finex Demo (hook)'); if(act==='open-echelon') alert('Open Échelon Demo (hook)'); if(act==='open-verdict') alert('Open Verdict Demo (hook)'); });
+productsMenu.addEventListener('click',(e)=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); alert(a.textContent+" (hook)"); });
 
-showDetails("cloud");
+// Default details
+showDetails('cloud');
 </script>
 </body>
 </html>
