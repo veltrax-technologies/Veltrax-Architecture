@@ -6,7 +6,6 @@
 <title>Veltrax — Local‑First Platform Overview</title>
 <style>
   :root{ --bg:#0d1117; --surface:#101624; --panel:#131a27; --text:#e6ecf3; --muted:#9aa7b6; --border:#223047; --accent:#6f42c1; --accent2:#8aa4ff; --ring:#7aa3ff; }
-  [data-theme="light"]{ --bg:#f6f8fb; --surface:#ffffff; --panel:#f8faff; --text:#0e1726; --muted:#5b6473; --border:#d7dfeb; --accent:#6f42c1; --accent2:#3d6dff; --ring:#325dff; }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
@@ -17,13 +16,6 @@
   .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .title{margin:0;font-size:15px;font-weight:700;letter-spacing:.3px}
   .spacer{flex:1}
-  .topbtn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
-  .topbtn[aria-pressed="true"]{outline:2px solid var(--ring)}
-  .menu{position:relative}
-  .popover{position:absolute;right:0;top:42px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);min-width:220px;padding:8px;display:none}
-  .popover[data-open="true"]{display:block}
-  .popover a{display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;color:var(--text)}
-  .popover a:hover{background:rgba(127,136,155,.12)}
 
   .container{max-width:1200px;margin:0 auto;padding:14px}
   .grid-two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
@@ -49,7 +41,6 @@
   .node{cursor:pointer;transition:filter .15s ease}
   .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 10px rgba(111,66,193,.45))}
   .node rect,.node path{fill:#0f1524;stroke:var(--border)}
-  [data-theme="light"] .node rect{fill:#f3f6ff}
   .node text{fill:var(--text)}
   .titleText{font-size:16px;font-weight:700}
   .subText{font-size:13px;fill:var(--muted)}
@@ -80,20 +71,11 @@
 </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header (Products/Theme removed per request) -->
   <header aria-label="Top bar">
     <span class="logo" aria-hidden="true"></span>
     <h1 class="title">Veltrax — Local‑First Platform</h1>
     <div class="spacer"></div>
-    <div class="menu" aria-haspopup="true">
-      <button id="productsBtn" class="topbtn" aria-expanded="false" aria-controls="productsMenu">Products ▾</button>
-      <div id="productsMenu" class="popover" role="menu" aria-label="Products">
-        <a role="menuitem" href="#" data-action="open-finex">Finex — Banking AI</a>
-        <a role="menuitem" href="#" data-action="open-echelon">ÉCHELON — Retail AI</a>
-        <a role="menuitem" href="#" data-action="open-verdict">Verdict — Legal AI</a>
-      </div>
-    </div>
-    <button id="theme" class="topbtn" aria-pressed="false" title="Toggle theme">Theme</button>
   </header>
 
   <div class="container">
@@ -191,19 +173,19 @@
 
 <script>
 // ─────────────────────────────────────────────
-// Executive‑clean diagram with orthogonal flow and curved edges
+// Executive‑clean diagram with orthogonal elbows and consistent spacing
 // ─────────────────────────────────────────────
-const GRID = { col:[60, 380, 720, 1060], row:[120, 260, 380] };
+const GRID = { col:[80, 420, 780, 1080], row:[140, 360, 520] };
 
 const model = {
   mode: 'air',
   nodes: [
-    { id:'cloud', x:GRID.col[0], y:GRID.row[0], w:280, h:110, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
-    { id:'local', x:GRID.col[0], y:GRID.row[1], w:280, h:120, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Read‑only sync from systems'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege access']} },
-    { id:'dmz',   x:GRID.col[1], y:GRID.row[0]+20, w:260, h:100, title:'DMZ', subtitle:'Signed pull & staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Cosign/Sigstore'],Security:['No secrets at rest']} },
-    { id:'core',  x:GRID.col[2], y:GRID.row[0]-20, w:380, h:220, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLM', bullets:{Purpose:['Run Finex/Échelon/Verdict','Score, route, explain'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit logs']} },
-    { id:'roi',   x:GRID.col[2], y:GRID.row[2]-10, w:380, h:150, title:'ROI & Audit', subtitle:'Proof of value & compliance', bullets:{Purpose:['Live savings & revenue'],Protocols:['JSONL • CSV/PDF'],Security:['Immutable hashes']} },
-    { id:'work',  x:GRID.col[3]-220, y:GRID.row[1]-20, w:220, h:110, title:'Employee Workstations', subtitle:'Apps served on LAN', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} }
+    { id:'cloud', x:GRID.col[0], y:GRID.row[0]-50, w:280, h:120, title:'Cloud Vendors', subtitle:'AWS • Azure • GCP • SaaS', bullets:{Purpose:['Bring off‑site data safely'],Protocols:['HTTPS/mTLS • Signed bundles'],Security:['DMZ stages & verifies']} },
+    { id:'local', x:GRID.col[0], y:GRID.row[1]-60, w:280, h:120, title:'Local Sensitive Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Read‑only sync from systems'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege access']} },
+    { id:'dmz',   x:GRID.col[1], y:GRID.row[0]-40, w:260, h:110, title:'DMZ', subtitle:'Signed pull & staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Cosign/Sigstore'],Security:['No secrets at rest']} },
+    { id:'core',  x:GRID.col[2], y:GRID.row[0]-80, w:380, h:240, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLM', bullets:{Purpose:['Run Finex/Échelon/Verdict','Score, route, explain'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit logs']} },
+    { id:'roi',   x:GRID.col[2], y:GRID.row[2]-80, w:380, h:160, title:'ROI & Audit', subtitle:'Proof of value & compliance', bullets:{Purpose:['Live savings & revenue'],Protocols:['JSONL • CSV/PDF'],Security:['Immutable hashes']} },
+    { id:'work',  x:GRID.col[3]-220, y:GRID.row[1]-70, w:220, h:120, title:'Employee Workstations', subtitle:'Apps served on LAN', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC • Least privilege']} }
   ],
   edges: [
     { id:'e1', from:'cloud', to:'dmz',   air:{cls:'dmz',   label:'Air‑gap stage offline'}, dmz:{cls:'dmz',   label:'Signed pull'} },
@@ -219,25 +201,23 @@ const arch=$('#arch'), gE=$('#edges'), gN=$('#nodes'), gL=$('#labels');
 const mode=$('#mode'), caption=$('#modeCaption');
 const dTitle=$('#dTitle'), dList=$('#dList');
 
-function rrect(x,y,w,h,r=14){ return `M${x+r},${y}h${w-2*r}a${r},${r}0 0 1 ${r},${r}v${h-2*r}a${r},${r} 0 0 1 -${r},${r}h-${w-2*r}a${r},${r}0 0 1 -${r},-${r}v-${h-2*r}a${r},${r}0 0 1 ${r},-${r}z`; }
+function rrect(x,y,w,h,r=16){ return `M${x+r},${y}h${w-2*r}a${r},${r}0 0 1 ${r},${r}v${h-2*r}a${r},${r} 0 0 1 -${r},${r}h-${w-2*r}a${r},${r}0 0 1 -${r},-${r}v-${h-2*r}a${r},${r}0 0 1 ${r},-${r}z`; }
 function center(n){ return {x:n.x+n.w/2,y:n.y+n.h/2}; }
-function elbow(from,to){ // orthogonal then smooth curve to avoid overlaps
-  const a=center(from), b=center(to);
-  const mx=(from.x+from.w + to.x)/2; // mid x between right of from and left of to
-  return `M${from.x+from.w},${a.y} C${mx},${a.y} ${mx},${b.y} ${to.x},${b.y}`;
+function orth(from,to){ // neat elbow: H to midX, V to target Y, H to target X
+  const x1=from.x+from.w, y1=center(from).y; const x2=to.x, y2=center(to).y;
+  const mid = (x1 + x2) / 2; return `M${x1},${y1} H${mid} V${y2} H${x2}`;
 }
 
 function render(){
   gE.innerHTML=gN.innerHTML=gL.innerHTML='';
-  // edges first
+  // edges
   for(const e of model.edges){
     const A=model.nodes.find(n=>n.id===e.from), B=model.nodes.find(n=>n.id===e.to);
     const cfg=(model.mode==='dmz')?e.dmz:e.air;
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d', elbow(A,B)); p.setAttribute('class', `edge ${cfg.cls}`);
+    p.setAttribute('d', orth(A,B)); p.setAttribute('class', `edge ${cfg.cls}`);
     p.setAttribute('stroke','currentColor'); p.setAttribute('marker-end','url(#arrow)'); p.dataset.id=e.id; gE.appendChild(p);
-    // label chip above the middle of the path
-    const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.5);
+    const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.55);
     const chip=document.createElementNS('http://www.w3.org/2000/svg','text'); chip.setAttribute('class','chiptext'); chip.textContent=cfg.label; chip.setAttribute('pointer-events','none'); gL.appendChild(chip);
     chip.setAttribute('x',pt.x); chip.setAttribute('y',pt.y-8);
     const bb=chip.getBBox(); const pad=6; const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -245,7 +225,7 @@ function render(){
     bg.setAttribute('width',bb.width+pad*2); bg.setAttribute('height',bb.height+pad*2);
     gL.insertBefore(bg, chip); chip.setAttribute('y',bb.y-2); chip.setAttribute('text-anchor','middle'); chip.setAttribute('x', bb.x+bb.width/2);
   }
-  // nodes on top
+  // nodes
   for(const n of model.nodes){
     const g=document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('class','node'); g.setAttribute('tabindex','0'); g.setAttribute('role','button'); g.setAttribute('aria-label', n.title); g.dataset.id=n.id;
@@ -291,18 +271,10 @@ function spawnPulse(edgePath, ms){
   (function step(t){ const k=Math.min(1,(t-start)/ms); const pt=edgePath.getPointAtLength(k*len); dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); if(k<1) requestAnimationFrame(step); else arch.removeChild(dot); })(start);
 }
 function loopPulses(){ const paths=[...document.querySelectorAll('#edges path')]; paths.forEach((p,i)=> setTimeout(()=> spawnPulse(p, 1400+Math.random()*800), i*240)); }
-loopPulses(); const pulseTimer=setInterval(loopPulses, 3000);
+loopPulses(); setInterval(loopPulses, 3000);
 
 // Simulate button to inject immediate pulses
 $('#simulate').addEventListener('click',()=> loopPulses());
-
-// Theme + products menu
-const themeBtn=document.querySelector('#theme'); const root=document.documentElement;
-themeBtn.addEventListener('click',()=>{ const isLight=root.getAttribute('data-theme')==='light'; root.setAttribute('data-theme', isLight? 'dark' : 'light'); themeBtn.setAttribute('aria-pressed', String(!isLight)); });
-const productsBtn=document.querySelector('#productsBtn'); const productsMenu=document.querySelector('#productsMenu');
-productsBtn.addEventListener('click',()=>{ const open = productsMenu.getAttribute('data-open')==='true'; productsMenu.setAttribute('data-open', String(!open)); productsBtn.setAttribute('aria-expanded', String(!open)); });
-document.addEventListener('click',(e)=>{ if(!productsMenu.contains(e.target) && e.target!==productsBtn){ productsMenu.setAttribute('data-open','false'); productsBtn.setAttribute('aria-expanded','false'); }});
-productsMenu.addEventListener('click',(e)=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); alert(a.textContent+" (hook)"); });
 
 // Default details
 showDetails('cloud');
