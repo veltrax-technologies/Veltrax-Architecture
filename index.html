@@ -39,6 +39,11 @@
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   ul{margin:8px 0 0 18px}
   footer{color:var(--muted);border-top:1px solid var(--border);padding:18px;margin-top:24px}
+  /* Founders + Next CTA */
+  .teaser{margin:16px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.02)}
+  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;color:var(--text);text-decoration:none}
+  .btn:hover{border-color:var(--accent)}
+  .founders{margin:14px 0;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
   @media (max-width: 920px){ .hero{grid-template-columns:1fr} .grid,.grid-3{grid-template-columns:1fr} }
 </style>
 </head>
@@ -143,7 +148,8 @@
       <path class="edge dmz" d="M310,235 H348" marker-end="url(#arrow)"/>
       <path class="edge dmz" d="M310,325 H348" marker-end="url(#arrow)"/>
       <path class="edge dmz" d="M548,245 H620" marker-end="url(#arrow)"/>
-      <path class="edge local" d="M500,460 H620" marker-end="url(#arrow)"/>
+      <!-- Curved/orth elbow from Local → Core (as requested) -->
+      <path class="edge local" d="M500,460 H560 V340 H620" marker-end="url(#arrow)"/>
       <path class="edge out" d="M960,190 H990" marker-end="url(#arrow)"/>
       <path class="edge out" d="M960,290 H990" marker-end="url(#arrow)"/>
       <path class="edge out" d="M960,390 H990" marker-end="url(#arrow)"/>
@@ -199,6 +205,15 @@
       </ul>
     </div>
   </section>
+
+  <!-- Founders & Next Page Teaser -->
+  <div class="founders" role="note" aria-label="Founders deal">
+    <strong>Founders deal:</strong> 30% upfront with milestone deliveries. First 5 get <strong>15% off</strong> + <strong>1 year support</strong>.
+  </div>
+  <div class="teaser" role="region" aria-label="Next page">
+    <div><strong>Next:</strong> Local LLM Deployment Simulator — size models to your hardware.</div>
+    <a class="btn" href="PASTE_NEXT_URL_HERE">Open Local LLM Simulator</a>
+  </div>
 </main>
 
 <footer class="wrap">
