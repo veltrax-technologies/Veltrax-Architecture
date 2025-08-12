@@ -3,306 +3,314 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veltrax — Local‑First Platform Overview</title>
+<title>Veltrax Architecture — Local‑First Enterprise AI</title>
 <style>
-  :root{ --bg:#0d1117; --surface:#101624; --panel:#131a27; --text:#e6ecf3; --muted:#9aa7b6; --border:#223047; --accent:#6f42c1; --accent2:#8aa4ff; --ring:#7aa3ff; }
+  :root{
+    --bg:#0d1117; --surface:#0f1421; --panel:#121a2a; --text:#e6ecf3; --muted:#9aa7b6; --border:#223047; --accent:#6f42c1; --accent2:#8aa4ff; --good:#3ad18a; --ring:#7aa3ff;
+  }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
-  a{color:#8ab4ff;text-decoration:none}
-  a:focus-visible,button:focus-visible,[role="button"]:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
-
-  /* Header (clean — no products/theme) */
-  header{position:sticky;top:0;z-index:50;background:linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0)), var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:12px 14px}
-  .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
-  .title{margin:0;font-size:15px;font-weight:700;letter-spacing:.3px}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
+  a{color:#9db7ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3{line-height:1.2}
+  h2{margin:20px 0 10px}
+  p{margin:10px 0}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(to bottom,rgba(2,6,23,.7),rgba(2,6,23,.2)),var(--surface);border-bottom:1px solid var(--border)}
+  .nav{display:flex;align-items:center;gap:14px;padding:12px 18px}
+  .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .spacer{flex:1}
+  .pill{border:1px solid var(--border);background:var(--panel);padding:6px 10px;border-radius:999px;color:var(--muted)}
 
-  .container{max-width:1200px;margin:0 auto;padding:14px}
-  .grid-two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+  .lead{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
   .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
-  .card h2{margin:0 0 8px 0;font-size:18px}
-  .card p{margin:6px 0;color:var(--muted)}
-  .bullets{margin:6px 0 0 18px;color:var(--muted)}
-  .small{color:var(--muted);font-size:13px}
+  .muted{color:var(--muted)}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .toc a{border:1px solid var(--border);padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.03)}
 
-  main{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
-  .canvas{position:relative;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-height:560px}
+  /* Diagram */
+  .diagram{margin:18px 0;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
   svg{width:100%;height:100%}
-
-  /* Details below diagram */
-  #details{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
-  #details .drawer-title{font-weight:700;font-size:14px;margin-bottom:8px}
-  #details .drawer-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:rgba(255,255,255,.02);margin-bottom:10px}
-  #details .drawer-card h3{margin:0 0 6px 0;font-size:13px}
-  #details .drawer-card ul{margin:0 0 0 18px;padding:0}
-  #details .drawer-card li{margin:4px 0;color:var(--muted)}
-
-  /* Diagram styling — clean, rectangular boxes; crisp lines */
-  .node{cursor:pointer;transition:filter .15s ease}
-  .node:hover,[aria-current="true"]{filter:drop-shadow(0 0 10px rgba(111,66,193,.45))}
-  .node rect,.node path{fill:#0f1524;stroke:var(--border)}
+  .node rect{fill:#0f1524;stroke:var(--border)}
   .node text{fill:var(--text)}
-  .titleText{font-size:16px;font-weight:700}
-  .subText{font-size:13px;fill:var(--muted)}
-  .bullet{font-size:13px;fill:var(--muted)}
-
+  .titleText{font-weight:700;font-size:15px}
+  .subText{fill:var(--muted);font-size:12.5px}
+  .bullet{fill:#9fb0c7;font-size:12.5px}
   .edge{stroke:#7b8497;stroke-width:2.6;fill:none}
-  .edge.dmz{stroke:var(--accent)}
+  .edge.dmz{stroke:#6f42c1}
   .edge.local{stroke:#8aa4ff}
   .edge.out{stroke:#7b8497}
-  .chip{fill:#0f1320;stroke:var(--border);stroke-width:1;rx:6;ry:6}
+  .chip{fill:#0f1320;stroke:var(--border);rx:6;ry:6}
   .chiptext{fill:#d9e1ee;font-size:12px}
-  .fwbar{fill:rgba(122,163,255,.10);stroke:#2b3650;stroke-width:1.5} /* subtle firewalls (no red) */
+  .fwbar{fill:rgba(122,163,255,.12);stroke:#2b3650}
 
-  .controls{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
-  .switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.02)}
-  .switch input{appearance:none;width:40px;height:22px;background:#3a4257;border-radius:999px;position:relative;cursor:pointer}
-  .switch input:checked{background:#4a7dff}
-  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s ease}
-  .switch input:checked::after{transform:translateX(18px)}
-  .btn{border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;color:var(--text)}
-  .pill{border:1px solid var(--border);background:var(--panel);padding:7px 10px;border-radius:8px;color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .badge{display:inline-block;border:1px solid var(--border);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:7px;color:var(--muted);font-size:12px;margin-right:6px}
 
-  .founders{margin-top:14px;border:2px solid var(--accent);background:linear-gradient(180deg,rgba(111,66,193,.10),rgba(111,66,193,.02));border-radius:14px;padding:14px}
-  .teaser{margin:14px 0;border:1px dashed var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  footer{color:var(--muted);padding:10px 0;border-top:1px solid var(--border);margin-top:12px}
+  ul{margin:8px 0 0 18px}
+  code{background:#0c1220;border:1px solid #1f2b44;padding:2px 5px;border-radius:6px}
 
-  @media (max-width: 980px){ .grid-two{grid-template-columns:1fr} }
-  @media (max-width: 560px){ body{font-size:16px} .canvas{min-height:520px} }
+  footer{color:var(--muted);border-top:1px solid var(--border);padding:18px;margin-top:24px}
+
+  @media (max-width: 920px){ .lead{grid-template-columns:1fr} .grid,.grid-3{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
-  <!-- Header -->
-  <header aria-label="Top bar">
-    <span class="logo" aria-hidden="true"></span>
-    <h1 class="title">Veltrax — Local‑First Platform</h1>
-    <div class="spacer"></div>
-  </header>
-
-  <div class="container">
-    <!-- Intro -->
-    <section class="grid-two" aria-label="Intro">
-      <div class="card">
-        <h2>What is Veltrax?</h2>
-        <p>Veltrax is a private, on‑premise AI platform. It connects your data, runs models locally, and shows live ROI. No third‑party LLM SaaS by default.</p>
-        <ul class="bullets">
-          <li>Works with banking, retail, and legal data.</li>
-          <li>Runs on hardware you control (workstation to DGX).</li>
-          <li>Ships with real apps: Finex, Échelon, Verdict.</li>
-        </ul>
-        <p class="small">Everything below happens inside your network.</p>
-      </div>
-      <div class="card">
-        <h2>Why local‑first?</h2>
-        <ul class="bullets">
-          <li><strong>Privacy & control:</strong> sensitive or proprietary data never leaves your building.</li>
-          <li><strong>Cost & speed:</strong> no per‑token API bills; low latency on your LAN.</li>
-          <li><strong>Proof:</strong> everything is audit‑logged so ROI is visible.</li>
-        </ul>
-        <p>Run fully air‑gapped, or use a locked‑down DMZ that pulls signed packages on a schedule.</p>
-      </div>
-    </section>
-
-    <!-- Diagram -->
-    <section aria-label="Architecture">
-      <main>
-        <div class="canvas" id="canvas" role="region" aria-label="Interactive architecture">
-          <svg id="arch" viewBox="0 0 1240 720" aria-label="Cloud Vendors & Local Data → DMZ → Veltrax Core → Workstations">
-            <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="currentColor"></path></marker>
-              <radialGradient id="pulse" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9aa8ff"/><stop offset="100%" stop-color="#6f42c1"/></radialGradient>
-            </defs>
-            <g id="edges"></g>
-            <g id="nodes"></g>
-            <g id="labels"></g>
-          </svg>
-          <!-- Controls -->
-          <div class="controls" aria-label="Controls">
-            <span class="switch" role="group" aria-label="Update mode">
-              <span aria-hidden="true">Air‑gapped</span>
-              <input id="mode" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle DMZ relay"/>
-              <span aria-hidden="true">DMZ relay</span>
-            </span>
-            <button class="btn" id="simulate" aria-label="Simulate ingestion">Simulate ingestion</button>
-            <span class="pill" id="modeCaption" aria-live="polite">Mode: Air‑gapped (manual signed packages)</span>
-          </div>
-        </div>
-      </main>
-
-      <!-- Details below diagram -->
-      <section id="details" aria-label="Details" class="card">
-        <div class="drawer-title">Details</div>
-        <div class="drawer-card">
-          <h3 id="dTitle">Hover or select a node</h3>
-          <ul id="dList"><li>Tab cycles nodes. Enter opens details. Esc closes.</li></ul>
-        </div>
-        <div class="drawer-card">
-          <h3>Security (simple)</h3>
-          <ul>
-            <li>Zero SaaS LLM by default; everything runs local.</li>
-            <li>Signed updates only. Optional quorum signatures.</li>
-            <li>No inbound ports to Core; DMZ pulls over mTLS.</li>
-          </ul>
-        </div>
-      </section>
-    </section>
-
-    <!-- Explainer -->
-    <section class="card" aria-label="How data flows">
-      <h2>How your data moves</h2>
-      <ul class="bullets">
-        <li><strong>Cloud vendors</strong> funnel into a secured <em>DMZ</em> that pulls signed packages on schedule.</li>
-        <li><strong>Local sensitive data</strong> feeds the <strong>Veltrax Core</strong> with read‑only connectors.</li>
-        <li>Inside the Core we run <strong>Apps + Postgres + Local LLM</strong>. Results stream to <strong>employee workstations</strong> for ROI, audit, and execs.</li>
-      </ul>
-    </section>
-
-    <!-- Next + Founders -->
-    <div class="teaser" role="region" aria-label="Next step">
-      <div><strong>Next:</strong> Local LLM Deployment Simulator — size models to your hardware.</div>
-      <a class="topbtn" href="PASTE_NEXT_URL_HERE" role="button">Open Local LLM Simulator</a>
-    </div>
-
-    <div class="founders" role="note" aria-label="Founders Program">
-      <strong>Founders Program:</strong> 30% upfront, milestone deliveries. <strong>First 5 get 15% off + 1 year support.</strong>
-    </div>
-
-    <footer>
-      <small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small>
-    </footer>
+<header>
+  <div class="nav wrap">
+    <div class="logo" aria-hidden="true"></div>
+    <strong>Veltrax — Architecture</strong>
+    <span class="spacer"></span>
+    <span class="pill">Local‑first • Private by default</span>
   </div>
+</header>
 
-<script>
-/* ─────────────────────────────────────────────────────────
-   1) Clean, professional diagram (matches your sketch)
-   ───────────────────────────────────────────────────────── */
-const model = {
-  mode: 'air',
-  nodes: [
-    { id:'cloud1', x:80,  y:150, w:240, h:84, title:'Cloud Vendor', subtitle:'AWS / Azure / SaaS', bullets:{Purpose:['Off‑site data'],Protocols:['HTTPS/mTLS'],Security:['Signed bundles']} },
-    { id:'cloud2', x:80,  y:250, w:240, h:84, title:'Cloud Vendor', subtitle:'API / S3 / Exports', bullets:{Purpose:['Off‑site data'],Protocols:['HTTPS/mTLS'],Security:['Signed bundles']} },
-    { id:'cloud3', x:80,  y:350, w:240, h:84, title:'Cloud Vendor', subtitle:'3rd‑party system', bullets:{Purpose:['Off‑site data'],Protocols:['HTTPS/mTLS'],Security:['Signed bundles']} },
+<main class="wrap">
+  <section class="lead">
+    <div class="card">
+      <h2>Overview</h2>
+      <p>Veltrax is a private, <strong>local‑first</strong> AI platform that runs on hardware you control. It ingests data from cloud vendors and on‑prem systems, stages it in a secured <strong>DMZ</strong>, and processes everything inside the <strong>Veltrax Core</strong> (Apps + Postgres + Local LLMs). Results and audit trails flow to employee workstations—without SaaS LLMs.</p>
+      <div class="toc">
+        <a href="#diagram">High‑level diagram</a>
+        <a href="#components">Components</a>
+        <a href="#flows">Data flows</a>
+        <a href="#security">Security model</a>
+        <a href="#deploy">Deployment</a>
+        <a href="#updates">Signed updates</a>
+        <a href="#observability">ROI & audit</a>
+        <a href="#sizing">Reference sizing</a>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Design goals</h2>
+      <ul>
+        <li><strong>Zero external LLMs by default</strong>. All inference local.</li>
+        <li><strong>Proven business impact</strong>. Every pipeline feeds ROI & audit.</li>
+        <li><strong>Defense‑in‑depth</strong>. DMZ boundary, signed updates, RBAC, immutable logs.</li>
+      </ul>
+      <p class="muted">Works for banking (Finex), retail (ÉCHELON), and legal (Verdict).</p>
+    </div>
+  </section>
 
-    { id:'dmz',    x:380, y:240, w:180, h:110, title:'DMZ', subtitle:'Secure staging', bullets:{Purpose:['Pull → stage → verify'],Protocols:['mTLS • Sigstore'],Security:['No secrets at rest']} },
-    { id:'local',  x:280, y:470, w:240, h:90,  title:'Local Data', subtitle:'Proprietary • Read‑only', bullets:{Purpose:['Direct read‑only'],Protocols:['JDBC/ODBC • SFTP'],Security:['Least‑privilege']} },
+  <!-- High‑level Diagram -->
+  <section id="diagram" class="diagram card" aria-label="Veltrax high level diagram">
+    <svg viewBox="0 0 1200 620" role="img" aria-label="Cloud vendors and local data flow through DMZ to Veltrax Core and out to workstations">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="currentColor"/></marker>
+      </defs>
+      <!-- Boxes -->
+      <g class="node"> <!-- Cloud vendors (stacked) -->
+        <rect x="70" y="110" width="240" height="70" rx="14"/>
+        <text x="90" y="135" class="titleText">Cloud Vendor</text>
+        <text x="90" y="155" class="subText">AWS • Azure • SaaS</text>
+      </g>
+      <g class="node">
+        <rect x="70" y="200" width="240" height="70" rx="14"/>
+        <text x="90" y="225" class="titleText">Cloud Vendor</text>
+        <text x="90" y="245" class="subText">API • S3 • Exports</text>
+      </g>
+      <g class="node">
+        <rect x="70" y="290" width="240" height="70" rx="14"/>
+        <text x="90" y="315" class="titleText">Cloud Vendor</text>
+        <text x="90" y="335" class="subText">3rd‑party system</text>
+      </g>
 
-    { id:'core',   x:640, y:200, w:360, h:190, title:'Veltrax Core', subtitle:'Apps • Postgres • Local LLMs', bullets:{Purpose:['Run Finex/Échelon/Verdict'],Protocols:['gRPC/HTTP • JWT/RBAC'],Security:['AES‑256 at rest • Audit']} },
-    { id:'work',   x:1040, y:230, w:200, h:110, title:'Workstations', subtitle:'ROI • Audit • Executive', bullets:{Purpose:['Use apps with local data'],Protocols:['HTTPS • SSO'],Security:['RBAC']} },
-  ],
-  edges: [
-    { id:'c1', from:'cloud1', to:'dmz', air:{cls:'dmz', label:'Signed pull'}, dmz:{cls:'dmz', label:'Signed pull'} },
-    { id:'c2', from:'cloud2', to:'dmz', air:{cls:'dmz', label:'Signed pull'}, dmz:{cls:'dmz', label:'Signed pull'} },
-    { id:'c3', from:'cloud3', to:'dmz', air:{cls:'dmz', label:'Signed pull'}, dmz:{cls:'dmz', label:'Signed pull'} },
-    { id:'d2c', from:'dmz',   to:'core', air:{cls:'dmz', label:'Verified package'}, dmz:{cls:'dmz', label:'Verified package'} },
-    { id:'l2c', from:'local', to:'core', air:{cls:'local', label:'Direct read‑only'}, dmz:{cls:'local', label:'Direct read‑only'} },
-    { id:'c2w', from:'core',  to:'work', air:{cls:'out', label:'Apps on LAN'}, dmz:{cls:'out', label:'Apps on LAN'} },
-  ]
-};
+      <g class="node"> <!-- DMZ with firewall bars -->
+        <rect x="360" y="190" width="180" height="110" rx="14"/>
+        <rect class="fwbar" x="348" y="198" width="8" height="94" rx="2"/>
+        <rect class="fwbar" x="542" y="198" width="8" height="94" rx="2"/>
+        <text x="380" y="215" class="titleText">DMZ</text>
+        <text x="380" y="235" class="subText">Secure relay & staging</text>
+      </g>
 
-/* ─────────────────────────────────────────────────────────
-   2) SVG helpers
-   ───────────────────────────────────────────────────────── */
-const $=(q,el=document)=>el.querySelector(q);
-const arch=$('#arch'), gE=$('#edges'), gN=$('#nodes'), gL=$('#labels');
-const mode=$('#mode'), caption=$('#modeCaption');
-const dTitle=$('#dTitle'), dList=$('#dList');
+      <g class="node"> <!-- Local data -->
+        <rect x="260" y="420" width="240" height="80" rx="14"/>
+        <text x="280" y="445" class="titleText">Local Data</text>
+        <text x="280" y="465" class="subText">Proprietary • Read‑only</text>
+      </g>
 
-function rrect(x,y,w,h,r=14){ return `M${x+r},${y}h${w-2*r}a${r},${r}0 0 1 ${r},${r}v${h-2*r}a${r},${r}0 0 1 -${r},${r}h-${w-2*r}a${r},${r}0 0 1 -${r},-${r}v-${h-2*r}a${r},${r}0 0 1 ${r},-${r}z`; }
-function center(n){ return {x:n.x+n.w/2,y:n.y+n.h/2}; }
-function orth(from,to){ // straight/orth elbows with generous spacing
-  const x1=from.x+from.w, y1=center(from).y; const x2=to.x, y2=center(to).y;
-  const mid=(x1+x2)/2; return `M${x1},${y1} H${mid} V${y2} H${x2}`;
-}
+      <g class="node"> <!-- Veltrax Core -->
+        <rect x="620" y="160" width="340" height="220" rx="14"/>
+        <text x="640" y="185" class="titleText">Veltrax Core</text>
+        <text x="640" y="205" class="subText">Apps • Postgres • Local LLMs</text>
+        <text x="640" y="230" class="bullet">• Apps: Finex • ÉCHELON • Verdict</text>
+        <text x="640" y="250" class="bullet">• Postgres (local)</text>
+        <text x="640" y="270" class="bullet">• Local LLM Engine</text>
+      </g>
 
-/* ─────────────────────────────────────────────────────────
-   3) Render (boxes first, then neat edges + labels + subtle firewalls)
-   ───────────────────────────────────────────────────────── */
-function render(){
-  gE.innerHTML=gN.innerHTML=gL.innerHTML='';
+      <g class="node"> <!-- Workstations (fan‑out) -->
+        <rect x="990" y="150" width="180" height="80" rx="14"/>
+        <text x="1010" y="175" class="titleText">Workstation</text>
+        <text x="1010" y="195" class="subText">ROI</text>
+      </g>
+      <g class="node">
+        <rect x="990" y="250" width="180" height="80" rx="14"/>
+        <text x="1010" y="275" class="titleText">Workstation</text>
+        <text x="1010" y="295" class="subText">Audit</text>
+      </g>
+      <g class="node">
+        <rect x="990" y="350" width="180" height="80" rx="14"/>
+        <text x="1010" y="375" class="titleText">Workstation</text>
+        <text x="1010" y="395" class="subText">Executive</text>
+      </g>
 
-  // Nodes (clean rectangular cards)
-  for(const n of model.nodes){
-    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','node'); g.setAttribute('tabindex','0'); g.setAttribute('role','button'); g.setAttribute('aria-label', n.title); g.dataset.id=n.id;
-    const shape=document.createElementNS('http://www.w3.org/2000/svg','path'); shape.setAttribute('d', rrect(n.x,n.y,n.w,n.h)); g.appendChild(shape);
-    const t1=document.createElementNS('http://www.w3.org/2000/svg','text'); t1.setAttribute('x',n.x+16); t1.setAttribute('y',n.y+28); t1.setAttribute('class','titleText'); t1.textContent=n.title; g.appendChild(t1);
-    const t2=document.createElementNS('http://www.w3.org/2000/svg','text'); t2.setAttribute('x',n.x+16); t2.setAttribute('y',n.y+48); t2.setAttribute('class','subText'); t2.textContent=n.subtitle; g.appendChild(t2);
-    if(n.id==='core'){
-      ['Apps: Finex • Échelon • Verdict','Postgres (local)','Local LLM Engine']
-        .forEach((line,i)=>{ const li=document.createElementNS('http://www.w3.org/2000/svg','text'); li.setAttribute('x',n.x+16); li.setAttribute('y',n.y+74+i*18); li.setAttribute('class','bullet'); li.textContent='• '+line; g.appendChild(li); });
-    }
-    gN.appendChild(g);
-  }
+      <!-- Edges (orthogonal, tidy) -->
+      <path class="edge dmz" d="M310,145 H348" marker-end="url(#arrow)"/>
+      <path class="edge dmz" d="M310,235 H348" marker-end="url(#arrow)"/>
+      <path class="edge dmz" d="M310,325 H348" marker-end="url(#arrow)"/>
+      <path class="edge dmz" d="M548,245 H620" marker-end="url(#arrow)"/>
+      <path class="edge local" d="M500,460 H620" marker-end="url(#arrow)"/>
+      <path class="edge out" d="M960,190 H990" marker-end="url(#arrow)"/>
+      <path class="edge out" d="M960,290 H990" marker-end="url(#arrow)"/>
+      <path class="edge out" d="M960,390 H990" marker-end="url(#arrow)"/>
+      <path class="edge out" d="M790,380 V400" marker-end="url(#arrow)"/>
 
-  // Subtle firewall bars flanking DMZ (no red)
-  const dmz=model.nodes.find(n=>n.id==='dmz');
-  const leftFW=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  leftFW.setAttribute('class','fwbar'); leftFW.setAttribute('x', dmz.x-14); leftFW.setAttribute('y', dmz.y+8);
-  leftFW.setAttribute('width', 8); leftFW.setAttribute('height', dmz.h-16); gL.appendChild(leftFW);
-  const rightFW=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  rightFW.setAttribute('class','fwbar'); rightFW.setAttribute('x', dmz.x+dmz.w+6); rightFW.setAttribute('y', dmz.y+8);
-  rightFW.setAttribute('width', 8); rightFW.setAttribute('height', dmz.h-16); gL.appendChild(rightFW);
+      <!-- Source labels -->
+      <text x="420" y="180" class="chiptext">DMZ boundary</text>
+    </svg>
+  </section>
 
-  // Edges (orth elbows, evenly spaced)
-  for(const e of model.edges){
-    const A=model.nodes.find(n=>n.id===e.from), B=model.nodes.find(n=>n.id===e.to);
-    const cfg=(model.mode==='dmz')?e.dmz:e.air;
-    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d', orth(A,B)); p.setAttribute('class', `edge ${cfg.cls}`);
-    p.setAttribute('stroke','currentColor'); p.setAttribute('marker-end','url(#arrow)'); p.dataset.id=e.id; gE.appendChild(p);
+  <!-- Components -->
+  <section id="components" class="grid">
+    <div class="card">
+      <h2>Veltrax Core</h2>
+      <p>Runs on customer hardware. Everything happens inside your network.</p>
+      <ul>
+        <li><strong>Apps</strong>: Finex (banking), ÉCHELON (retail), Verdict (legal).</li>
+        <li><strong>Storage</strong>: Postgres with PITR, encryption at rest.</li>
+        <li><strong>Models</strong>: Local LLMs & task‑specific models, quantized for the target GPU/CPU.</li>
+        <li><strong>Auth</strong>: SSO/OIDC, JWT, and RBAC enforced at the service layer.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>DMZ</h2>
+      <ul>
+        <li>Pulls signed update/data bundles on a schedule (mTLS).</li>
+        <li>Verifies provenance (Sigstore/Cosign). No long‑lived secrets at rest.</li>
+        <li>Transfers across the boundary into the Core via approved jobs.</li>
+      </ul>
+      <p class="muted"><span class="badge">Air‑gapped</span><span class="badge">DMZ relay</span> Both modes supported.</p>
+    </div>
+  </section>
 
-    // label chip
-    const len=p.getTotalLength(), pt=p.getPointAtLength(len*0.52);
-    const text=document.createElementNS('http://www.w3.org/2000/svg','text'); text.setAttribute('class','chiptext'); text.textContent=cfg.label; gL.appendChild(text);
-    text.setAttribute('x', pt.x); text.setAttribute('y', pt.y-8);
-    const bb=text.getBBox(); const pad=6; const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
-    bg.setAttribute('class','chip'); bg.setAttribute('x', bb.x-pad); bg.setAttribute('y', bb.y-10-pad);
-    bg.setAttribute('width', bb.width+pad*2); bg.setAttribute('height', bb.height+pad*2);
-    gL.insertBefore(bg, text); text.setAttribute('y', bb.y-2); text.setAttribute('text-anchor','middle'); text.setAttribute('x', bb.x+bb.width/2);
-  }
-}
-render();
+  <!-- Flows -->
+  <section id="flows" class="card" style="margin-top:14px">
+    <h2>Data Flows</h2>
+    <ol>
+      <li><strong>Cloud vendors → DMZ → Core</strong>: vendor exports are signed, staged in DMZ, then applied to the Core after verification.</li>
+      <li><strong>Local sensitive data → Core</strong>: read‑only connectors (JDBC/ODBC/SFTP) ingest operational data without exposing secrets externally.</li>
+      <li><strong>Core → Workstations</strong>: apps served on LAN; all actions are audit‑logged and summarized for ROI.</li>
+    </ol>
+  </section>
 
-/* ─────────────────────────────────────────────────────────
-   4) Drawer + interactions
-   ───────────────────────────────────────────────────────── */
-function showDetails(id){
-  const n=model.nodes.find(x=>x.id===id); if(!n) return;
-  dTitle.textContent=n.title; dList.innerHTML='';
-  const b=n.bullets||{};
-  [['Purpose', b.Purpose?.[0]||'Connected flow'],['Protocols', b.Protocols?.[0]||'HTTPS/mTLS'],['Security', b.Security?.[0]||'Least‑privilege']]
-    .forEach(([k,v])=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${k}:</strong> ${v}`; dList.appendChild(li); });
-}
-function clearCurrent(){ [...gN.querySelectorAll('.node')].forEach(n=>n.removeAttribute('aria-current')); }
+  <!-- Security -->
+  <section id="security" class="grid">
+    <div class="card">
+      <h2>Security Model</h2>
+      <ul>
+        <li>Defense‑in‑depth: DMZ boundary, network segmentation, least‑privilege service accounts.</li>
+        <li>mTLS everywhere; certificates rotated automatically.</li>
+        <li>Encryption: AES‑256 at rest, TLS in transit.</li>
+        <li>RBAC & signed release artifacts; optional quorum for updates.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Compliance & Audit</h2>
+      <ul>
+        <li>Immutable event logs with content hashes.</li>
+        <li>Deterministic pipelines; every prediction is explainable and traceable.</li>
+        <li>Export to CSV/PDF for auditors; JSONL for data teams.</li>
+      </ul>
+    </div>
+  </section>
 
-gN.addEventListener('mouseover',e=>{ const g=e.target.closest('.node'); if(!g) return; g.setAttribute('aria-current','true'); showDetails(g.dataset.id); });
-gN.addEventListener('mouseout',e=>{ const g=e.target.closest('.node'); if(!g) return; g.removeAttribute('aria-current'); });
-gN.addEventListener('click',e=>{ const g=e.target.closest('.node'); if(!g) return; clearCurrent(); g.setAttribute('aria-current','true'); showDetails(g.dataset.id); });
-gN.addEventListener('keydown',e=>{ const g=e.target.closest('.node'); if(!g) return; if(e.key==='Enter'||e.key===' '){ e.preventDefault(); clearCurrent(); g.setAttribute('aria-current','true'); showDetails(g.dataset.id);} });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') clearCurrent(); });
+  <!-- Deployment -->
+  <section id="deploy" class="grid">
+    <div class="card">
+      <h2>Deployment Options</h2>
+      <ul>
+        <li><strong>Air‑gapped</strong>: media transfer of signed bundles; no direct network egress.</li>
+        <li><strong>DMZ relay</strong>: pull over mTLS on a fixed cadence; no inbound ports opened to Core.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Network & Ports</h2>
+      <ul>
+        <li>DMZ → Core: pull jobs over mTLS (one‑way).</li>
+        <li>Workstations → Core: HTTPS (443) through the LAN with SSO.</li>
+        <li>Source systems → Core: JDBC/ODBC/SFTP as read‑only users.</li>
+      </ul>
+    </div>
+  </section>
 
-/* ─────────────────────────────────────────────────────────
-   5) Mode toggle affects captions; pulse animation for "alive" feel
-   ───────────────────────────────────────────────────────── */
-mode.addEventListener('change',()=>{
-  model.mode = mode.checked ? 'dmz' : 'air';
-  caption.textContent = model.mode==='air' ? 'Mode: Air‑gapped (manual signed packages)' : 'Mode: DMZ relay (signed pull over mTLS)';
-  render();
-});
+  <!-- Signed updates -->
+  <section id="updates" class="card" style="margin-top:14px">
+    <h2>Signed Updates</h2>
+    <ol>
+      <li>Build pipeline produces an SBOM + signed artifacts.</li>
+      <li>DMZ fetches the release manifest and verifies signatures.</li>
+      <li>Validated packages are staged and applied to Core with policy checks.</li>
+    </ol>
+    <p class="muted">All artifacts are attestable with provenance; rollbacks are deterministic.</p>
+  </section>
 
-function spawnPulse(edgePath, ms){
-  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('r','4.5'); dot.setAttribute('fill','url(#pulse)'); arch.appendChild(dot);
-  const len=edgePath.getTotalLength(); const start=performance.now();
-  (function step(t){ const k=Math.min(1,(t-start)/ms); const pt=edgePath.getPointAtLength(k*len); dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); if(k<1) requestAnimationFrame(step); else arch.removeChild(dot); })(start);
-}
-function loopPulses(){ const paths=[...document.querySelectorAll('#edges path')]; paths.forEach((p,i)=> setTimeout(()=> spawnPulse(p, 1200+Math.random()*700), i*160)); }
-loopPulses(); setInterval(loopPulses, 2600);
+  <!-- Observability / ROI -->
+  <section id="observability" class="grid">
+    <div class="card">
+      <h2>Observability</h2>
+      <ul>
+        <li>Structured event stream (JSONL) per service.</li>
+        <li>Resource metrics (CPU/GPU/mem/IO) with budgets per workload.</li>
+        <li>Trace replay for incident analysis.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>ROI & Audit</h2>
+      <ul>
+        <li>KPIs surfaced per department (savings, fraud prevented, time saved).</li>
+        <li>Every action mapped to a ledger entry with an owner and timestamp.</li>
+        <li>Exports for Finance & Compliance (CSV/PDF).</li>
+      </ul>
+    </div>
+  </section>
 
-document.querySelector('#simulate').addEventListener('click',()=> loopPulses());
+  <!-- Sizing -->
+  <section id="sizing" class="card" style="margin-top:14px">
+    <h2>Reference Sizing</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Starter</h3>
+        <ul>
+          <li>1× workstation‑class GPU (e.g., 24–48GB VRAM)</li>
+          <li>128GB RAM • NVMe 2TB</li>
+          <li>100–200 concurrent users</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Standard</h3>
+        <ul>
+          <li>2–4× GPUs (80GB VRAM class)</li>
+          <li>256–512GB RAM • NVMe 8TB</li>
+          <li>500–2k concurrent users</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Enterprise</h3>
+        <ul>
+          <li>8× GPUs (H100/A100 class) + CPU inference tier</li>
+          <li>1–2TB RAM • NVMe 16TB+</li>
+          <li>Multi‑site HA + DR</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted">Next: <a href="#">Local LLM Deployment Simulator</a> to size exact models to your hardware.</p>
+  </section>
+</main>
 
-// Default details
-showDetails('cloud1');
-</script>
+<footer class="wrap">
+  <small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small>
+</footer>
 </body>
 </html>
