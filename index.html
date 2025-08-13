@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Veltrax — Local‑First Architecture</title>
+<title>Veltrax — Local-First Architecture</title>
 <style>
   :root{--bg:#0d1117;--surface:#0f1421;--panel:#121a2a;--text:#e6ecf3;--muted:#9aa7b6;--border:#223047;--accent:#6f42c1;--accent2:#7aa3ff}
   *{box-sizing:border-box}
@@ -53,34 +53,35 @@
     <div class="logo" aria-hidden="true"></div>
     <strong>Veltrax — Architecture</strong>
     <span class="spacer"></span>
-    <span class="pill">Public overview • Local‑first</span>
+    <span class="pill">Public overview • Local-first</span>
   </div>
 </header>
 
 <main class="wrap">
   <section class="hero">
     <div class="card">
-      <h1>Local‑First Enterprise AI</h1>
-      <p>Veltrax runs on hardware you control. Data from cloud sources and on‑prem systems is staged at the boundary and processed inside the <strong>Veltrax Core</strong> (Apps • Database • Local LLMs). Results reach employee workstations with built‑in ROI and audit visibility. <strong>No SaaS LLM by default.</strong></p>
+      <h1>Local-First Enterprise AI</h1>
+      <p>Veltrax runs on hardware you control. Data from cloud sources and on-prem systems is staged at the boundary and processed inside the <strong>Veltrax Core</strong> (Apps • Database • Local LLMs). Results reach employee workstations with built-in ROI and audit visibility. <strong>No SaaS LLM by default.</strong></p>
       <div class="toc">
-        <a href="#diagram">High‑level diagram</a>
+        <a href="#diagram">High-level diagram</a>
         <a href="#components">Components</a>
         <a href="#flows">Data flows</a>
         <a href="#trust">Trust & posture</a>
       </div>
     </div>
+
+    <!-- REPLACED CARD -->
     <div class="card">
-      <h2>What to know (public)</h2>
-      <ul>
-        <li>Conceptual, high‑level architecture (safe for GitHub).</li>
-        <li>Local‑first compute; customer‑controlled data.</li>
-        <li>ROI & Audit by design.</li>
-      </ul>
+      <h2>Veltrax brings everything together.</h2>
+      <p>We unify your most critical data under one secure platform, hosted on your own hardware, and make it instantly explorable using a powerful local LLM. Every department — fraud, lending, operations, compliance, strategy — can ask real questions and get real answers, grounded in your actual numbers.</p>
+      <p>Instead of guessing or waiting weeks for a report, executives can now understand what’s happening, why it’s happening, and what to do next — all in real time.</p>
+      <p>Instead of just speeding up your old processes, Veltrax redefines how executives and teams operate. It’s not about replacing roles — it’s about equipping your people with the intelligence to be more effective than ever. By putting all your business’s data at their fingertips, you empower them to make smarter, faster decisions that drive profitability in ways they’ve never experienced before.</p>
+      <p>Veltrax doesn’t just streamline your stack — it upgrades the way your business thinks.</p>
       <p class="muted">Technical implementation details are shared under NDA during evaluations.</p>
     </div>
   </section>
 
-  <!-- High‑level Diagram (conceptual, redacted) -->
+  <!-- High-level Diagram (conceptual, redacted) -->
   <section id="diagram" class="diagram card" aria-label="Veltrax high level diagram">
     <svg viewBox="0 0 1200 560" role="img" aria-label="Cloud sources and local data flow through a Boundary into the Veltrax Core, then to Workstations">
       <defs>
@@ -100,7 +101,7 @@
       <g class="node">
         <rect x="70" y="290" width="240" height="70" rx="14"/>
         <text x="90" y="315" class="titleText">Cloud Source</text>
-        <text x="90" y="335" class="subText">3rd‑party</text>
+        <text x="90" y="335" class="subText">3rd-party</text>
       </g>
 
       <!-- Boundary (former DMZ) with soft bars -->
@@ -116,7 +117,7 @@
       <g class="node">
         <rect x="260" y="420" width="240" height="80" rx="14"/>
         <text x="280" y="445" class="titleText">Local Sensitive Data</text>
-        <text x="280" y="465" class="subText">Proprietary • Read‑only (conceptual)</text>
+        <text x="280" y="465" class="subText">Proprietary • Read-only (conceptual)</text>
       </g>
 
       <!-- Core -->
@@ -126,7 +127,7 @@
         <text x="640" y="205" class="subText">Apps • Database • Local LLMs</text>
       </g>
 
-      <!-- Workstations (fan‑out) -->
+      <!-- Workstations (fan-out) -->
       <g class="node">
         <rect x="990" y="150" width="180" height="80" rx="14"/>
         <text x="1010" y="175" class="titleText">Workstation</text>
@@ -161,7 +162,7 @@
     <div class="card">
       <h2>Veltrax Core</h2>
       <ul>
-        <li>Self‑hosted <strong>Apps</strong> for each vertical.</li>
+        <li>Self-hosted <strong>Apps</strong> for each vertical.</li>
         <li>Local <strong>Database</strong> for state & analytics.</li>
         <li><strong>Local LLMs</strong> sized to your hardware.</li>
       </ul>
@@ -171,7 +172,7 @@
       <ul>
         <li>Isolates external data and updates before they enter the Core.</li>
         <li>Operates on a schedule defined by the customer.</li>
-        <li>Can support fully air‑gapped operations.</li>
+        <li>Can support fully air-gapped operations.</li>
       </ul>
     </div>
   </section>
@@ -181,19 +182,19 @@
     <h2>Data Flows</h2>
     <ol>
       <li><strong>Cloud sources → Boundary → Core</strong> for vendor or SaaS exports.</li>
-      <li><strong>Local sensitive data → Core</strong> via read‑only connectors.</li>
+      <li><strong>Local sensitive data → Core</strong> via read-only connectors.</li>
       <li><strong>Core → Workstations</strong> for ROI, Audit, and Executive views.</li>
     </ol>
   </section>
 
-  <!-- Trust posture (non‑technical) -->
+  <!-- Trust posture (non-technical) -->
   <section id="trust" class="grid">
     <div class="card">
       <h2>Trust & Posture</h2>
       <ul>
-        <li>Local‑first by default; customer‑controlled environment.</li>
-        <li>Defense‑in‑depth with a staged boundary.</li>
-        <li>Transparent value: ROI & audit visibility built‑in.</li>
+        <li>Local-first by default; customer-controlled environment.</li>
+        <li>Defense-in-depth with a staged boundary.</li>
+        <li>Transparent value: ROI & audit visibility built-in.</li>
       </ul>
     </div>
     <div class="card">
@@ -217,7 +218,7 @@
 </main>
 
 <footer class="wrap">
-  <small>© Veltrax Technologies — local‑first AI for high‑stakes industries.</small>
+  <small>© Veltrax Technologies — local-first AI for high-stakes industries.</small>
 </footer>
 </body>
 </html>
